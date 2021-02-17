@@ -1,0 +1,52 @@
+package com.maxime.go4launch.api;
+
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.maxime.go4launch.model.Workmate;
+
+public class UserHelper {
+
+    private static final String COLLECTION_NAME = "users";
+
+    // --- COLLECTION REFERENCE ---
+
+    public static CollectionReference getUsersCollection(){
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+    }
+
+    // --- CREATE ---
+
+    public static com.google.android.gms.tasks.Task<Void> createUser(String id, String avatar, String name) {
+        Workmate workmateToCreate = new Workmate(id, avatar, name);
+        return UserHelper.getUsersCollection().document(id).set(workmateToCreate);
+    }
+
+    // --- GET ---
+
+    public static com.google.android.gms.tasks.Task<DocumentSnapshot> getUser(String id){
+        return UserHelper.getUsersCollection().document(id).get();
+    }
+
+    // --- UPDATE ---
+
+    public static com.google.android.gms.tasks.Task<Void> updateUserName(String id, String name) {
+        return UserHelper.getUsersCollection().document(id).update("username", name);
+    }
+
+    public static com.google.android.gms.tasks.Task<Void> updateUserAvatar(String id, String avatar) {
+        return UserHelper.getUsersCollection().document(id).update("userUrlAvatar", avatar);
+    }
+
+    public static com.google.android.gms.tasks.Task<Void> updateUserRestaurant(String id, String restaurant) {
+        return UserHelper.getUsersCollection().document(id).update("Mcdo", restaurant);
+    }
+
+    // --- DELETE ---
+
+    public static Task<Void> deleteUser(String id) {
+        return UserHelper.getUsersCollection().document(id).delete();
+    }
+
+}

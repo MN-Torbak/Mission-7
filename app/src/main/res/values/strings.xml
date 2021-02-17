@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="title_activity_main2">MainActivity</string>
+    <string name="title_map_view">Map View</string>
+    <string name="title_list_view">List View</string>
+    <string name="title_workmates">Workmates</string>
+    <string name="title_activity_main3">MainActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Go4Lunch</string>
+    <string name="nav_profile_name">John SMITH</string>
+    <string name="nav_profile_mail">jsmith.1337@gmail.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_your_lunch">YOUR LUNCH</string>
+    <string name="menu_settings">SETTINGS</string>
+    <string name="menu_logout">LOGOUT</string>
+    <string name="title_activity_restaurant">ScrollingActivity</string>
+
+    <string name="button_update_account">Mettre à jour le nom d\'utilisateur</string>
+    <string name="button_delete_account">Supprimer mon compte</string>
+    <string name="button_sign_out_account">Déconnexion</string>
+    <string name="info_no_email_found">Auncune adresse email</string>
+    <string name="info_no_username_found">Aucun nom d\'utilisateur</string>
+    <string name="popup_message_confirmation_delete_account">Es-tu sûr(e) de vouloir supprimer ton compte ?</string>
+    <string name="popup_message_choice_yes">Oui !</string>
+    <string name="popup_message_choice_no">Non</string>
+    <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
+    <string name="text_view_email">Adresse email :</string>
+</resources>

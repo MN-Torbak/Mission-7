@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/avatar_workmate"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:shape="oval" />
+
+    <TextView
+        android:id="@+id/name_workmate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/avatar_workmate"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toEndOf="@id/avatar_workmate"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textStyle="bold"
+        tools:text="Name" />
+
+    <TextView
+        android:id="@+id/restaurant_workmate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/avatar_workmate"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:textColor="@android:color/black"
+        app:layout_constraintStart_toEndOf="@id/name_workmate"
+        app:layout_constraintTop_toTopOf="parent"
+        android:textStyle="bold"
+        tools:text="Restaurant" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
