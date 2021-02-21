@@ -26,8 +26,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (this.isCurrentUserLogged()) { this.startDrawerActivity(); }
-        else { this.startSignInActivity(); }
+        //if (this.isCurrentUserLogged()) { this.startDrawerActivity(); }
+        //else { this.startSignInActivity(); }
+        startSignInActivity();
     }
 
     @Override
@@ -49,14 +50,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startSignInActivity() {
-        startActivityForResult(
+        this.startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setTheme(R.style.LoginTheme)
                         .setAvailableProviders(
-                                Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(), //EMAIL
-                                        new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(), //GOOGLE
-                                        new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())) // FACEBOOK
+                                Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build(), //EMAIL
+                                        new AuthUI.IdpConfig.GoogleBuilder().build()/*, //GOOGLE
+                                        new AuthUI.IdpConfig.FacebookBuilder().build()*/)) // FACEBOOK
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.drawable.ic_logo_auth)
                         .build(),
@@ -77,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
                 this.createUserInFirestore();
             } else { // ERRORS
                 if (response == null) {
-                } else if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
-                } else if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                //} else if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                //} else if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
                 }
             }
         }
