@@ -1,4 +1,4 @@
-package com.maxime.go4launch.ui.listview;
+package com.maxime.go4lunch.ui.listview;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

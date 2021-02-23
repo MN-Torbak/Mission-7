@@ -1,10 +1,10 @@
-package com.maxime.go4launch.api;
+package com.maxime.go4lunch.api;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.maxime.go4launch.model.Workmate;
+import com.maxime.go4lunch.model.Workmate;
 
 public class UserHelper {
 
@@ -19,8 +19,8 @@ public class UserHelper {
     // --- CREATE ---
 
     public static com.google.android.gms.tasks.Task<Void> createUser(String id, String avatar, String name) {
-        Workmate workmateToCreate = new Workmate(id, avatar, name);
-        return UserHelper.getUsersCollection().document(id).set(workmateToCreate);
+        Workmate userToCreate = new Workmate(id, avatar, name);
+        return UserHelper.getUsersCollection().document(id).set(userToCreate);
     }
 
     // --- GET ---

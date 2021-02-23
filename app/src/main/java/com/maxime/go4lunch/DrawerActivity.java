@@ -1,9 +1,16 @@
-package com.maxime.go4launch;
+package com.maxime.go4lunch;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -11,7 +18,6 @@ import com.google.firebase.auth.FirebaseUser;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
-import androidx.navigation.NavHostController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -22,6 +28,7 @@ import androidx.appcompat.widget.Toolbar;
 
 public class DrawerActivity extends AppCompatActivity {
 
+    private static final int SIGN_OUT_TASK = 10;
     private AppBarConfiguration mAppBarConfiguration;
 
     @Override
@@ -40,8 +47,13 @@ public class DrawerActivity extends AppCompatActivity {
         assert navHostFragment != null;
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(navigationView, navController);
-        NavigationUI.setupWithNavController(navigationView, navController);
-
+        navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                signOutUserFromFirebase();
+                return true;
+            }
+        });
     }
 
 
@@ -52,12 +64,60 @@ public class DrawerActivity extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.drawer_menu_activity, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.nav_logout:
+                signOutUserFromFirebase();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void signOutUserFromFirebase() {
+        AuthUI.getInstance()
+                .signOut(this).addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+    }
+
+    private void startMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
+        return new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                switch (origin) {
+                    case SIGN_OUT_TASK:
+                        finish();
+                        startMainActivity();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+    }
+
     @Nullable
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
+    protected FirebaseUser getCurrentUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
 
-    protected Boolean isCurrentUserLogged(){ return (this.getCurrentUser() != null); }
+    protected Boolean isCurrentUserLogged() {
+        return (this.getCurrentUser() != null);
+    }
 
-    protected OnFailureListener onFailureListener(){
+    protected OnFailureListener onFailureListener() {
         return new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {

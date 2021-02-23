@@ -1,16 +1,16 @@
-package com.maxime.go4launch.ui.workmates;
+package com.maxime.go4lunch.ui.yourlunch;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class WorkMatesViewModel extends ViewModel {
+public class YourLunchViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public WorkMatesViewModel() {
+    public YourLunchViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is Workmates fragment");
+        mText.setValue("Your Lunch");
     }
 
     public LiveData<String> getText() {

@@ -7,13 +7,13 @@
 
     <fragment
         android:id="@+id/nav_your_lunch"
-        android:name="com.maxime.go4launch.ui.yourlunch.YourLunchFragment"
+        android:name="com.maxime.go4lunch.ui.yourlunch.YourLunchFragment"
         android:label="@string/menu_your_lunch"
         tools:layout="@layout/fragment_your_lunch" />
 
     <fragment
         android:id="@+id/nav_settings"
-        android:name="com.maxime.go4launch.ui.settings.SettingsFragment"
+        android:name="com.maxime.go4lunch.ui.settings.SettingsFragment"
         android:label="@string/menu_settings"
         tools:layout="@layout/fragment_settings" />
 

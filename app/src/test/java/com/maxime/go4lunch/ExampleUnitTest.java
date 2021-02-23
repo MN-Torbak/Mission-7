@@ -1,4 +1,4 @@
-package com.maxime.go4launch;
+package com.maxime.go4lunch;
 
 import org.junit.Test;
 

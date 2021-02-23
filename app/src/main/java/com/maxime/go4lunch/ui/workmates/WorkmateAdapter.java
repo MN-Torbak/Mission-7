@@ -1,4 +1,4 @@
-package com.maxime.go4launch.ui.workmates;
+package com.maxime.go4lunch.ui.workmates;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,8 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.maxime.go4launch.R;
-import com.maxime.go4launch.model.Workmate;
+import com.maxime.go4lunch.R;
+import com.maxime.go4lunch.model.Workmate;
 
 import java.util.List;
 

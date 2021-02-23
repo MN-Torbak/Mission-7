@@ -1,4 +1,4 @@
-package com.maxime.go4launch;
+package com.maxime.go4lunch;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.maxime.go4launch.api.UserHelper;
+import com.maxime.go4lunch.api.UserHelper;
 
 import java.util.Arrays;
 
@@ -54,11 +54,11 @@ public class MainActivity extends AppCompatActivity {
                         .createSignInIntentBuilder()
                         .setTheme(R.style.LoginTheme)
                         .setAvailableProviders(
-                                Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(), //EMAIL
-                                        new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(), //GOOGLE
-                                        new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())) // FACEBOOK
+                                Arrays.asList(new AuthUI.IdpConfig.EmailBuilder().build(), //EMAIL
+                                        new AuthUI.IdpConfig.GoogleBuilder().build()/*, //GOOGLE
+                                        new AuthUI.IdpConfig.FacebookBuilder().build()*/)) // FACEBOOK
                         .setIsSmartLockEnabled(false, true)
-                        .setLogo(R.drawable.ic_logo_auth)
+                        .setLogo(R.drawable.ic_go4lunch)
                         .build(),
                 RC_SIGN_IN);
     }
@@ -75,22 +75,14 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
                 this.createUserInFirestore();
+                startDrawerActivity();
             } else { // ERRORS
                 if (response == null) {
-                } else if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
-                } else if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
+                } /*else if (response.getErrorCode() == ErrorCodes.NO_NETWORK)*/ {
+                } /*else if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) */{
                 }
             }
         }
-    }
-
-    @Nullable
-    protected FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
-    }
-
-    protected Boolean isCurrentUserLogged() {
-        return (this.getCurrentUser() != null);
     }
 
     protected OnFailureListener onFailureListener() {
@@ -100,5 +92,14 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
             }
         };
+    }
+
+    @Nullable
+    protected FirebaseUser getCurrentUser() {
+        return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    protected Boolean isCurrentUserLogged() {
+        return (this.getCurrentUser() != null);
     }
 }

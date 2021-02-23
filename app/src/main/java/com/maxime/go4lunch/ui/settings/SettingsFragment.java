@@ -1,4 +1,4 @@
-package com.maxime.go4launch.ui.settings;
+package com.maxime.go4lunch.ui.settings;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,13 +18,13 @@ import androidx.fragment.app.Fragment;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.textfield.TextInputEditText;
-import com.maxime.go4launch.model.Workmate;
+import com.maxime.go4lunch.model.Workmate;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.maxime.go4launch.R;
-import com.maxime.go4launch.api.UserHelper;
+import com.maxime.go4lunch.R;
+import com.maxime.go4lunch.api.UserHelper;
 
 public class SettingsFragment extends Fragment {
 

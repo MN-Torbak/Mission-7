@@ -1,4 +1,4 @@
-package com.maxime.go4launch.ui.mapview;
+package com.maxime.go4lunch.ui.mapview;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

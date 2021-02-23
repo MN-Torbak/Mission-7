@@ -1,4 +1,4 @@
-package com.maxime.go4launch.ui.listview;
+package com.maxime.go4lunch.ui.listview;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.maxime.go4launch.R;
+import com.maxime.go4lunch.R;
 
 public class ListViewFragment extends Fragment {
 

@@ -1,4 +1,4 @@
-package com.maxime.go4launch;
+package com.maxime.go4lunch;
 
 import android.os.Bundle;
 
@@ -14,9 +14,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.maxime.go4launch.api.UserHelper;
-import com.maxime.go4launch.model.Restaurant;
-import com.maxime.go4launch.model.Workmate;
+import com.maxime.go4lunch.api.UserHelper;
+import com.maxime.go4lunch.model.Restaurant;
+import com.maxime.go4lunch.model.Workmate;
 
 public class RestaurantActivity extends AppCompatActivity {
 

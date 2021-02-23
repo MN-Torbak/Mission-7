@@ -1,4 +1,4 @@
-package com.maxime.go4launch.ui.settings;
+package com.maxime.go4lunch.ui.settings;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

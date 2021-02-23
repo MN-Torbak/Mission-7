@@ -1,4 +1,4 @@
-package com.maxime.go4launch.model;
+package com.maxime.go4lunch.model;
 
 public class Workmate {
 

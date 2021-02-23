@@ -1,32 +1,19 @@
-package com.maxime.go4launch.ui.yourlunch;
+package com.maxime.go4lunch.ui.yourlunch;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
-import com.maxime.go4launch.R;
-
-import java.util.Objects;
+import com.maxime.go4lunch.R;
 
 
 public class YourLunchFragment extends Fragment {

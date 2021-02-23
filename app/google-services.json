@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:991996982901:android:51908851433c3fb228ea3c",
+        "mobilesdk_app_id": "1:991996982901:android:b7350b0e43f92a5c28ea3c",
         "android_client_info": {
-          "package_name": "com.maxime.go4launch"
+          "package_name": "com.maxime.go4lunch"
         }
       },
       "oauth_client": [
