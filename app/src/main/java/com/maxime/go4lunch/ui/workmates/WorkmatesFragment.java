@@ -2,25 +2,31 @@ package com.maxime.go4lunch.ui.workmates;
 
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnFailureListener;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.maxime.go4lunch.R;
+import com.maxime.go4lunch.api.UserHelper;
 import com.maxime.go4lunch.model.Workmate;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 
 public class WorkmatesFragment extends Fragment {
 
@@ -32,25 +38,7 @@ public class WorkmatesFragment extends Fragment {
 
         View root = inflater.inflate(R.layout.fragment_workmates, container, false);
         mRecyclerView = root.findViewById(R.id.fragmentWorkmatesRecyclerView);
-        List<Workmate> workmates = new ArrayList<>();
-        Workmate mate = new Workmate("1", "R.drawable.com_facebook_auth_dialog_background", "Jacque");
-        workmates.add(mate);
-        Workmate mate1 = new Workmate("2", "R.drawable.com_facebook_auth_dialog_background", "Jacque");
-        workmates.add(mate1);
-
-        //Task<DocumentSnapshot> task = UserHelper.getUser("Wbl68CXjJvffJ9ReKhrG9Xy22xu1");
-
-        //UserHelper.getUser("Wbl68CXjJvffJ9ReKhrG9Xy22xu1").addOnFailureListener(onFailureListener()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            //@Override
-            //public void onSuccess(DocumentSnapshot documentSnapshot) {
-               // Workmate currentWorkmate = documentSnapshot.toObject(Workmate.class);
-              //  String username = TextUtils.isEmpty(currentWorkmate.getName()) ? getString(R.string.info_no_username_found) : currentWorkmate.getName();
-                /*textInputEditTextUsername.setText(username);*/
-           // }
-        //});
-
-
-        displayWorkmates(workmates);
+        getAllDocs();
         return root;
     }
 
@@ -62,13 +50,26 @@ public class WorkmatesFragment extends Fragment {
         mRecyclerView.setAdapter(workmateAdapter);
     }
 
-    protected OnFailureListener onFailureListener(){
-        return new OnFailureListener() {
+    public void getAllDocs() {
+        UserHelper.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                List<Workmate> workmates = new ArrayList<>();
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot document : task.getResult()) {
+                        Workmate workmate = document.toObject(Workmate.class);
+                        workmates.add(workmate);
+                    }
+                    displayWorkmates(workmates);
+                } else {
+                    Log.d("WorkmatesFragment", "Error getting documents: ", task.getException());
+                }
             }
-        };
+        });
     }
-
 }
+
+
+
+
+

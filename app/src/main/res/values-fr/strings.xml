@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="title_map_view">Carte</string>
+    <string name="title_list_view">Liste</string>
+    <string name="title_workmates">Collègues</string>
+    <string name="nav_header_title">Go4Lunch</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="menu_settings">PARAMETRES</string>
+    <string name="menu_logout">DECONNEXION</string>
+    <string name="button_update_account">Mettre à jour le nom d\'utilisateur</string>
+    <string name="button_delete_account">Supprimer mon compte</string>
+    <string name="button_sign_out_account">Déconnexion</string>
+    <string name="info_no_email_found">Aucune adresse email</string>
+    <string name="info_no_username_found">Aucun nom d\'utilisateur</string>
+    <string name="popup_message_confirmation_delete_account">Es-tu sûr(e) de vouloir supprimer ton compte ?</string>
+    <string name="popup_message_choice_yes">Oui !</string>
+    <string name="popup_message_choice_no">Non</string>
+    <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
+    <string name="text_view_email">Adresse email :</string>
+    <string name="menu_your_lunch">VOTRE DEJEUNER</string>
+    <string name="unknown_error">Erreur inconnue</string>
+    <string name="no_internet_connection">Pas de connexion internet</string>
+    <string name="play_services_update_cancelled">Mise à jour des Play Services annulée</string>
+    <string name="developer_error">Erreur du développeur</string>
+    <string name="provider_error">Erreur du fournisseur</string>
+    <string name="user_account_merge_conflict">Conflit de fusion de compte d\'utilisateur</string>
+    <string name="attempting_to_sign_in_different_email">Vous essayez de vous connecter à une adresse e-mail différente de celle fournie précédemment</string>
+    <string name="attempting_to_sign_with_an_invalid_email_link">Vous essayez de vous connecter avec un e-mail non valide</string>
+    <string name="please_enter_your_email_to_continue_signing_in">Veuillez saisir votre adresse e-mail pour continuer à vous connecter</string>
+    <string name="you_must_open_the_email_link_on_the_same_device">Vous devez ouvrir le lien e-mail sur le même appareil.</string>
+    <string name="you_must_determine_if_you_want_continue_linking_or_complete_the_sign_in">Vous devez déterminer si vous souhaitez continuer la liaison ou terminer la connexion</string>
+    <string name="the_session_associated_with_this_sign_in_request_has_either_expired_or_was_cleared">La session associée à cette demande de connexion a expiré ou a été effacée</string>
+    <string name="the_user_account_has_been_disabled_by_an_administrator">Le compte utilisateur a été désactivé par un administrateur.</string>
+    <string name="generic_idp_recoverable_error">Erreur récupérable IDP générique.</string>
+    <string name="unknown_code">"Code inconnue: "</string>
+</resources>

@@ -28,7 +28,7 @@
 
         <activity
             android:name="com.maxime.go4lunch.DrawerActivity"
-            android:label="@string/title_activity_main3"
+            android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar">
 
 
