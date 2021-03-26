@@ -1,35 +1,61 @@
 package com.maxime.go4lunch.ui.listview;
 
 import android.os.Bundle;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.maxime.go4lunch.DrawerActivity;
 import com.maxime.go4lunch.R;
+import com.maxime.go4lunch.model.Restaurant;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
 
 public class ListViewFragment extends Fragment {
 
-    private ListViewViewModel mListViewViewModel;
+
+    RecyclerView mRecyclerView;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        mListViewViewModel =
-                ViewModelProviders.of(this).get(ListViewViewModel.class);
+
         View root = inflater.inflate(R.layout.fragment_list_view, container, false);
-        final TextView textView = root.findViewById(R.id.text_list_view);
-        mListViewViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
+        mRecyclerView = root.findViewById(R.id.fragmentListViewRecyclerView);
+        List<Restaurant> restaurants = new ArrayList<>();
+        displayListView(listRestaurant(restaurants));
         return root;
     }
+
+    private void displayListView(List<Restaurant> restaurants) {
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
+        mRecyclerView.setLayoutManager(layoutManager);
+        ListViewAdapter listViewAdapter = new ListViewAdapter(restaurants);
+        listViewAdapter.notifyDataSetChanged();
+        mRecyclerView.setAdapter(listViewAdapter);
+    }
+
+    public List<Restaurant> listRestaurant(List<Restaurant> restaurants) {
+        PlacesClient placesClient = Places.createClient(getContext());
+        ((DrawerActivity)getActivity()).getRestaurant(placesClient);
+        return restaurants;
+    }
+
+
 }
+
+
+
+
+

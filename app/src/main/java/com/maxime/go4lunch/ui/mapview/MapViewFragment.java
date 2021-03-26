@@ -11,28 +11,41 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.PointOfInterest;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.maxime.go4lunch.R;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
 
     private GoogleMap mMap;
-    LatLng latLng;
-    Marker mCurrLocation;
 
     public MapViewFragment() {
         // Required empty public constructor
@@ -45,8 +58,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        Places.initialize(getContext(), "AIzaSyB5qv2MT51P9YLI_tS0ZbWIvkOE4oo2P2s");
+        Places.initialize(getContext(), "AIzaSyC5PnYLjeSjD1CHBrujXoKqUt0yozB86bk");
         PlacesClient placesClient = Places.createClient(getActivity());
+        test(placesClient);
         LocationManager locationManager = (LocationManager)
                 getActivity().getSystemService(Context.LOCATION_SERVICE);
         LocationListener locationListener = new LocationListener() {
@@ -87,23 +101,16 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         enableMyLocation();
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(43.1, -87.9)));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(43.1, -87.9), 10));
-
     }
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     private void enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-            //if (map != null) {
-            //    map.setMyLocationEnabled(true);
-            // }
         } else {
-            // Permission to access the location is missing. Show rationale and request permission
             ActivityCompat.requestPermissions(getActivity(),
-                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    new String[]{ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
     }
@@ -115,7 +122,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         //locationPermissionGranted = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //locationPermissionGranted = true;
@@ -130,6 +136,44 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             }
         }
         //updateLocationUI();
+    }
+
+    void test(PlacesClient placesClient) {
+        final List<Place.Field> placeFields = Collections.singletonList(Place.Field.NAME);
+        final List<Place.Field> arraylistField = new ArrayList<>();
+        arraylistField.add(Place.Field.TYPES);
+        arraylistField.add(Place.Field.NAME);
+        arraylistField.add(Place.Field.ADDRESS);
+        //arraylistField.add(Place.Field.ADDRESS_COMPONENTS);
+        //arraylistField.add(Place.Field.OPENING_HOURS);
+        arraylistField.add(Place.Field.PHOTO_METADATAS);
+
+        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(arraylistField);
+
+        if (ContextCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
+            placeResponse.addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if (task.isSuccessful()) {
+                        FindCurrentPlaceResponse response = (FindCurrentPlaceResponse) task.getResult();
+                        List<PlaceLikelihood> restaurants = new ArrayList<>();
+                        for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
+                            if (placeLikelihood.getPlace().getTypes().contains(Place.Type.RESTAURANT)) {
+                                restaurants.add(placeLikelihood);
+                            }
+                        }
+                        Log.d("gg", "onComplete: ");
+                    } else {
+                        Exception exception = task.getException();
+                        if (exception instanceof ApiException) {
+                            ApiException apiException = (ApiException) exception;
+                            Log.e("bg", "Place not found: " + apiException.getStatusCode());
+                        }
+                    }
+                }
+            });
+        }
     }
 
 }

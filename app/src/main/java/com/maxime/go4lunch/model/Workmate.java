@@ -9,11 +9,11 @@ public class Workmate {
 
     public Workmate () {}
 
-    public Workmate(String avatar, String id, String name) {
+    public Workmate(String id, String avatar, String name) {
         this.avatar = avatar;
         this.id = id;
         this.name = name;
-        this.restaurant = "n'a pas choisi";
+        this.restaurant = "aucun";
     }
 
     public String getAvatar() { return avatar; }

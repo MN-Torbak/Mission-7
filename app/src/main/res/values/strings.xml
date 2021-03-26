@@ -11,22 +11,27 @@
     <string name="nav_profile_mail" translatable="false">jsmith.1337@gmail.com</string>
     <string name="nav_header_desc" translatable="false">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="chosen">%s has chosen:  %s</string>
+    <string name="not_chosen">%s hasn\'t chosen yet</string>
 
     <string name="menu_your_lunch">YOUR LUNCH</string>
     <string name="menu_settings">SETTINGS</string>
     <string name="menu_logout">LOGOUT</string>
     <string name="title_activity_restaurant" translatable="false">ScrollingActivity</string>
 
-    <string name="button_update_account">Update user\'s name</string>
+    <string name="button_update_account">Update</string>
     <string name="button_delete_account">Delete my account</string>
     <string name="button_sign_out_account">Loggout</string>
     <string name="info_no_email_found">No email</string>
     <string name="info_no_username_found">No user\'s name</string>
+    <string name="info_no_useravatar_found">No avatar defined</string>
+    <string name="username_updated">User\'s name updated !</string>
+    <string name="useravatar_updated">User\'s avatar updated !</string>
     <string name="popup_message_confirmation_delete_account">Are you sure you want to delete your account?</string>
     <string name="popup_message_choice_yes">Yes !</string>
     <string name="popup_message_choice_no">No</string>
     <string name="error_unknown_error">An unknown error has occurred&#8230;</string>
-    <string name="text_view_email">E-mail address :</string>
+    <string name="text_view_email">E-mail address: </string>
 
     <string name="unknown_error">Unknown error</string>
     <string name="no_internet_connection">No internet connection</string>

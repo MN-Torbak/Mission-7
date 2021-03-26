@@ -42,15 +42,15 @@ public class UserHelper {
     // --- UPDATE ---
 
     public static com.google.android.gms.tasks.Task<Void> updateUserName(String id, String name) {
-        return UserHelper.getUsersCollection().document(id).update("username", name);
+        return UserHelper.getUsersCollection().document(id).update("name", name);
     }
 
     public static com.google.android.gms.tasks.Task<Void> updateUserAvatar(String id, String avatar) {
-        return UserHelper.getUsersCollection().document(id).update("userUrlAvatar", avatar);
+        return UserHelper.getUsersCollection().document(id).update("avatar", avatar);
     }
 
     public static com.google.android.gms.tasks.Task<Void> updateUserRestaurant(String id, String restaurant) {
-        return UserHelper.getUsersCollection().document(id).update("Mcdo", restaurant);
+        return UserHelper.getUsersCollection().document(id).update("restaurant", restaurant);
     }
 
     // --- DELETE ---

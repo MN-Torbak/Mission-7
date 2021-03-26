@@ -6,15 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".ui.listview.ListViewFragment">
 
-    <TextView
-        android:id="@+id/text_list_view"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fragmentListViewRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="match_parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:gravity="center" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

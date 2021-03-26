@@ -2,22 +2,29 @@ package com.maxime.go4lunch.ui.settings;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.material.textfield.TextInputEditText;
+import com.maxime.go4lunch.MainActivity;
 import com.maxime.go4lunch.model.Workmate;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,25 +33,33 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.api.UserHelper;
 
+import java.util.Objects;
+
 public class SettingsFragment extends Fragment {
 
-    TextView name;
+    ImageView avatar;
+    EditText name;
+    EditText avatarEdit;
     TextView mail;
-    Button update;
+    Button updateName;
+    Button updateAvatar;
     Button signOut;
     Button delete;
-    TextInputEditText textInputEditTextUsername;
 
     private static final int SIGN_OUT_TASK = 10;
     private static final int DELETE_USER_TASK = 20;
     private static final int UPDATE_USERNAME = 30;
+    private static final int UPDATE_USERAVATAR = 40;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        name = (TextView) view.findViewById(R.id.name);
-        mail = (TextView) view.findViewById(R.id.mail);
-        update = view.findViewById(R.id.button_update);
+        avatar = (ImageView) view.findViewById(R.id.avatar);
+        name = (EditText) view.findViewById(R.id.name);
+        avatarEdit = (EditText) view.findViewById(R.id.avatar_edit);
+        //mail = (TextView) view.findViewById(R.id.mail);
+        updateName = view.findViewById(R.id.button_update);
+        updateAvatar = view.findViewById(R.id.button_update_avatar);
         signOut = view.findViewById(R.id.button_sign_out);
         delete = view.findViewById(R.id.button_delete);
         this.updateUIWhenCreating();
@@ -53,10 +68,17 @@ public class SettingsFragment extends Fragment {
         // ACTIONS
         // --------------------
 
-        update.setOnClickListener(new View.OnClickListener() {
+        updateName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onClickUpdateButton();
+            }
+        });
+
+        updateAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickUpdateAvatarButton();
             }
         });
 
@@ -76,28 +98,34 @@ public class SettingsFragment extends Fragment {
         return view;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void updateUIWhenCreating(){
 
         if (this.getCurrentUser() != null){
 
-            /*if (this.getCurrentUser().getPhotoUrl() != null) {
-                Glide.with(this)
-                        .load(this.getCurrentUser().getPhotoUrl())
+            if (this.getCurrentUser().getPhotoUrl() == null) {
+                Glide.with(requireContext())
+                        .load("https://www.icône.com/images/icones/2/9/face-plain-2.png")
                         .apply(RequestOptions.circleCropTransform())
-                        .into(imageViewProfile);
-            }*/
+                        .into(avatar);
+            }
+            //String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
+            //this.mail.setText(email);
 
-            String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
-
-            this.mail.setText(email);
-
-            // 7 - Get additional data from Firestore (isMentor & Username)
             UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     Workmate currentWorkmate = documentSnapshot.toObject(Workmate.class);
                     String username = TextUtils.isEmpty(currentWorkmate.getName()) ? getString(R.string.info_no_username_found) : currentWorkmate.getName();
-                    /*textInputEditTextUsername.setText(username);*/
+                    name.setText(username);
+                    String useravatar = TextUtils.isEmpty(currentWorkmate.getAvatar()) ? getString(R.string.info_no_useravatar_found) : currentWorkmate.getAvatar();
+                    avatarEdit.setText(useravatar);
+                    if (currentWorkmate.getAvatar() != null) {
+                        Glide.with(requireContext())
+                                .load(currentWorkmate.getAvatar())
+                                .apply(RequestOptions.circleCropTransform())
+                                .into(avatar);
+                    }
                 }
             });
         }
@@ -105,6 +133,10 @@ public class SettingsFragment extends Fragment {
 
     public void onClickUpdateButton() {
         this.updateUsernameInFirebase();
+    }
+
+    public void onClickUpdateAvatarButton() {
+        this.updateUseravatarInFirebase();
     }
 
     public void onClickSignOutButton() {
@@ -126,25 +158,38 @@ public class SettingsFragment extends Fragment {
 
     private void updateUsernameInFirebase(){
 
-        String username = this.textInputEditTextUsername.getText().toString();
+        String username = this.name.getText().toString();
 
         if (this.getCurrentUser() != null){
             if (!username.isEmpty() &&  !username.equals(getString(R.string.info_no_username_found))){
-                UserHelper.updateUserName(username, this.getCurrentUser().getUid()).addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
+                UserHelper.updateUserName(this.getCurrentUser().getUid(), username)
+                        .addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
             }
         }
     }
 
+    private void updateUseravatarInFirebase(){
+
+        String useravatar = this.avatarEdit.getText().toString();
+
+        if (this.getCurrentUser() != null){
+            if (!useravatar.isEmpty() &&  !useravatar.equals(getString(R.string.info_no_useravatar_found))){
+                UserHelper.updateUserAvatar(this.getCurrentUser().getUid(), useravatar)
+                        .addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERAVATAR));
+            }
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void signOutUserFromFirebase(){
         AuthUI.getInstance()
-                .signOut(getContext())
-                .addOnSuccessListener(getActivity(), this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+                .signOut(requireContext())
+                .addOnSuccessListener(requireActivity(), this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
     }
 
     private void deleteUserFromFirebase(){
         if (this.getCurrentUser() != null) {
-            UserHelper.deleteUser(this.getCurrentUser().getUid())/*.addOnFailureListener(getActivity().onFailureListener())*/;
-
+            UserHelper.deleteUser(this.getCurrentUser().getUid()/*.addOnFailureListener(getActivity().onFailureListener())*/);
         }
     }
 
@@ -153,15 +198,26 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onSuccess(Void aVoid) {
                 switch (origin){
-                    // 8 - Hiding Progress bar after request completed
                     case UPDATE_USERNAME:
-                        /*progressBar.setVisibility(View.INVISIBLE);*/
+                        Toast.makeText(getContext(), getString(R.string.username_updated), Toast.LENGTH_LONG).show();
+                        break;
+                    case UPDATE_USERAVATAR:
+                        Toast.makeText(getContext(), getString(R.string.useravatar_updated), Toast.LENGTH_LONG).show();
+                        break;
+                    case SIGN_OUT_TASK:
+                        requireActivity().finish();
+                        startMainActivity();
                         break;
                 }
             }
         };
     }
 
+
+    private void startMainActivity() {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        startActivity(intent);
+    }
 
     @Nullable
     protected FirebaseUser getCurrentUser() {

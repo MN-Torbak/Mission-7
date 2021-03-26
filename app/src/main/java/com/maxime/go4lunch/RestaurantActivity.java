@@ -25,7 +25,7 @@ public class RestaurantActivity extends AppCompatActivity {
 
     ImageView avatarRestaurant;
     TextView nameRestaurant;
-    TextView infoRestaurant;
+    TextView scheduleRestaurant;
     TextView addressRestaurant;
     Button phoneNumberRestaurant;
     Button likeRestaurant;

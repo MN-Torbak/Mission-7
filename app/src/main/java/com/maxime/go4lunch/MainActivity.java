@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         if (this.getCurrentUser() != null) {
 
             String id = this.getCurrentUser().getUid();
-            String avatar = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
+            String avatar = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : "https://www.icône.com/images/icones/2/9/face-plain-2.png";
             String name = this.getCurrentUser().getDisplayName();
 
             UserHelper.createUser(id, avatar, name).addOnFailureListener(this.onFailureListener());

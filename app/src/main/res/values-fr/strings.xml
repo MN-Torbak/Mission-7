@@ -8,7 +8,7 @@
     <string name="action_settings">Paramètres</string>
     <string name="menu_settings">PARAMETRES</string>
     <string name="menu_logout">DECONNEXION</string>
-    <string name="button_update_account">Mettre à jour le nom d\'utilisateur</string>
+    <string name="button_update_account">Mettre à jour</string>
     <string name="button_delete_account">Supprimer mon compte</string>
     <string name="button_sign_out_account">Déconnexion</string>
     <string name="info_no_email_found">Aucune adresse email</string>
@@ -17,7 +17,7 @@
     <string name="popup_message_choice_yes">Oui !</string>
     <string name="popup_message_choice_no">Non</string>
     <string name="error_unknown_error">Une erreur inconnue s\'est produite&#8230;</string>
-    <string name="text_view_email">Adresse email :</string>
+    <string name="text_view_email">"Adresse email: "</string>
     <string name="menu_your_lunch">VOTRE DEJEUNER</string>
     <string name="unknown_error">Erreur inconnue</string>
     <string name="no_internet_connection">Pas de connexion internet</string>
@@ -34,4 +34,9 @@
     <string name="the_user_account_has_been_disabled_by_an_administrator">Le compte utilisateur a été désactivé par un administrateur.</string>
     <string name="generic_idp_recoverable_error">Erreur récupérable IDP générique.</string>
     <string name="unknown_code">"Code inconnue: "</string>
+    <string name="chosen">%s a choisi: %s</string>
+    <string name="not_chosen">%s n\'a pas encore choisi</string>
+    <string name="info_no_useravatar_found">Aucun avatar défini</string>
+    <string name="username_updated">Nom d\'utilisateur mis à jour !</string>
+    <string name="useravatar_updated">Avatar mis à jour !</string>
 </resources>

@@ -1,5 +1,8 @@
 package com.maxime.go4lunch.ui.workmates;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Workmate;
 
@@ -24,13 +29,11 @@ public class WorkmateAdapter extends RecyclerView.Adapter<WorkmateAdapter.Workma
 
         ImageView mAvatar;
         TextView mName;
-        TextView mRestaurant;
 
         WorkmateViewHolder(@NonNull View itemView) {
             super(itemView);
             mAvatar = itemView.findViewById(R.id.avatar_workmate);
             mName = itemView.findViewById(R.id.name_workmate);
-            mRestaurant = itemView.findViewById(R.id.restaurant_workmate);
         }
     }
 
@@ -47,9 +50,17 @@ public class WorkmateAdapter extends RecyclerView.Adapter<WorkmateAdapter.Workma
     @Override
     public void onBindViewHolder(@NonNull final WorkmateAdapter.WorkmateViewHolder holder, int position) {
         final Workmate workmate = mWorkmates.get(position);
-        holder.mAvatar.setImageResource(R.drawable.ic_checkbox_green);
-        holder.mName.setText(workmate.getName());
-        holder.mRestaurant.setText(workmate.getRestaurant());
+        Glide.with(holder.mAvatar.getContext())
+                .load(workmate.getAvatar())
+                .apply(RequestOptions.circleCropTransform())
+                .into(holder.mAvatar);
+        if (workmate.getRestaurant().equals("aucun")) {
+            holder.mName.setTypeface(null, Typeface.ITALIC);
+            holder.mName.setText(holder.mName.getContext().getString(R.string.not_chosen, workmate.getName()));
+        } else {
+
+            holder.mName.setText(holder.mName.getContext().getString(R.string.chosen, workmate.getName(), workmate.getRestaurant()));
+        }
     }
 
     @Override

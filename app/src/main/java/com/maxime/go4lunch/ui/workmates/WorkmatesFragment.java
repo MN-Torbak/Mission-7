@@ -50,17 +50,27 @@ public class WorkmatesFragment extends Fragment {
         mRecyclerView.setAdapter(workmateAdapter);
     }
 
+    // TODO: faire ça mieux, comparator ?
+    private List<Workmate> orderWorkmates (Task<QuerySnapshot> task) {
+        List<Workmate> workmates = new ArrayList<>();
+        for (DocumentSnapshot document : task.getResult()) {
+            Workmate workmate = document.toObject(Workmate.class);
+            assert workmate != null;
+            if (workmate.getRestaurant().equals("aucun")) {
+                workmates.add(workmates.size(), workmate);
+            } else {
+                workmates.add(0, workmate);
+            }
+        }
+        return workmates;
+    }
+
     public void getAllDocs() {
         UserHelper.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                List<Workmate> workmates = new ArrayList<>();
                 if (task.isSuccessful()) {
-                    for (DocumentSnapshot document : task.getResult()) {
-                        Workmate workmate = document.toObject(Workmate.class);
-                        workmates.add(workmate);
-                    }
-                    displayWorkmates(workmates);
+                    displayWorkmates(orderWorkmates(task));
                 } else {
                     Log.d("WorkmatesFragment", "Error getting documents: ", task.getException());
                 }
