@@ -14,9 +14,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,6 +37,8 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.maxime.go4lunch.R;
+import com.maxime.go4lunch.model.Restaurant;
+import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +48,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
-
+    private DrawerSharedViewModel mSharedViewModel;
     private GoogleMap mMap;
 
     public MapViewFragment() {
@@ -94,6 +98,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             Log.d("logmap", "requestlocationupdateerror");
         }
         return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mSharedViewModel = new ViewModelProvider(requireActivity()).get(DrawerSharedViewModel.class);
+       //TODO get restaurant live data and display them as markers on the map 
     }
 
     @Override
