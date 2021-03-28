@@ -26,10 +26,13 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.maxime.go4lunch.model.Restaurant;
+import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
@@ -49,6 +52,7 @@ public class DrawerActivity extends AppCompatActivity {
 
     private static final int SIGN_OUT_TASK = 10;
     private AppBarConfiguration mAppBarConfiguration;
+    DrawerSharedViewModel mDrawerSharedViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +78,8 @@ public class DrawerActivity extends AppCompatActivity {
                 return true;
             }
         });
+        mDrawerSharedViewModel = new ViewModelProvider(this).get(DrawerSharedViewModel.class);
+        mDrawerSharedViewModel.getRestaurant(this);
     }
 
 

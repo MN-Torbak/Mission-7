@@ -104,7 +104,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mSharedViewModel = new ViewModelProvider(requireActivity()).get(DrawerSharedViewModel.class);
-       //TODO get restaurant live data and display them as markers on the map 
+       //TODO get restaurant live data and display them as markers on the map
     }
 
     @Override

@@ -6,11 +6,13 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
@@ -27,7 +29,10 @@ public class DrawerSharedViewModel extends ViewModel {
 
     public ArrayList<Restaurant> restaurants;//TODO turn into liveData for a fancier implementation
 
-    public void getRestaurant(PlacesClient placesClient, Context context) {
+    public MutableLiveData<ArrayList<Restaurant>> liveData = new MutableLiveData<>();
+
+    public void getRestaurant(Context context) {
+        PlacesClient placesClient = Places.createClient(context);
         List<Place.Field> arraylistField = new ArrayList<>();
         arraylistField.add(Place.Field.TYPES);
         arraylistField.add(Place.Field.NAME);
@@ -49,6 +54,7 @@ public class DrawerSharedViewModel extends ViewModel {
                                 restaurants.add(new Restaurant(placeLikelihood));
                             }
                         }
+                        liveData.setValue(restaurants);
                         Log.d("gg", "onComplete: ");
                     } else {
                         Exception exception = task.getException();
