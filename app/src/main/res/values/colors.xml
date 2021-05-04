@@ -5,4 +5,6 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="colorError">#FF5252</color>
     <color name="colorBackgroundBlack">#88000000</color>
+    <color name="dividerColor">#52D8FE</color>
+    <color name="colorOrange">#FF9800</color>
 </resources>

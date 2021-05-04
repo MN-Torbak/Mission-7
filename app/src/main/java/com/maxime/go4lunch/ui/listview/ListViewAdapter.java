@@ -1,6 +1,5 @@
 package com.maxime.go4lunch.ui.listview;
 
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Restaurant;
 
@@ -55,12 +53,13 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
         Restaurant restaurant = mRestaurant.get(position);
         Glide.with(holder.mAvatar.getContext())
                 .load(restaurant.getUrlAvatar())
-                .apply(RequestOptions.circleCropTransform())
                 .into(holder.mAvatar);
         holder.mName.setText(restaurant.getName());
         holder.mAddress.setText(restaurant.getAddress());
         holder.mSchedule.setText(restaurant.getSchedule());
     }
+
+
 
     @Override
     public int getItemCount() {

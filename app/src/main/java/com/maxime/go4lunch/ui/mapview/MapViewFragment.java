@@ -1,7 +1,7 @@
 package com.maxime.go4lunch.ui.mapview;
 
-import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -11,44 +11,46 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.PointOfInterest;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.gms.maps.model.MarkerOptions;
+
 import com.maxime.go4lunch.R;
+import com.maxime.go4lunch.RestaurantActivity;
+import com.maxime.go4lunch.model.Restaurant;
+import com.maxime.go4lunch.ui.RestaurantDetailsFragment;
+import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
-
+    private DrawerSharedViewModel mSharedViewModel;
     private GoogleMap mMap;
+    private LocationListener locationListener;
+    private LocationManager locationManager;
 
     public MapViewFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -58,12 +60,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        Places.initialize(getContext(), "AIzaSyC5PnYLjeSjD1CHBrujXoKqUt0yozB86bk");
-        PlacesClient placesClient = Places.createClient(getActivity());
-        test(placesClient);
-        LocationManager locationManager = (LocationManager)
+        locationManager = (LocationManager)
                 getActivity().getSystemService(Context.LOCATION_SERVICE);
-        LocationListener locationListener = new LocationListener() {
+        locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 if (mMap == null) {
@@ -89,7 +88,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         };
         try {
             locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
+                    LocationManager.GPS_PROVIDER, 1000, 50, locationListener);
         } catch (SecurityException e) {
             Log.d("logmap", "requestlocationupdateerror");
         }
@@ -97,10 +96,66 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mSharedViewModel = new ViewModelProvider(requireActivity()).get(DrawerSharedViewModel.class);
+        mSharedViewModel.liveRestaurant.observe(requireActivity(), new Observer<ArrayList<Restaurant>>() {
+            @Override
+            public void onChanged(final ArrayList<Restaurant> restaurants) {
+                for (Restaurant currentRestaurant : restaurants) {
+                    final LatLng position = (currentRestaurant.getLatlng());
+                    int markerDrawable = R.drawable.restaurant_empty_marker;
+                    if (currentRestaurant.getWorkmatesBeEating().size() > 0) {
+                        markerDrawable = R.drawable.restaurant_full_marker;
+                    }
+                    mMap.addMarker(new MarkerOptions()
+                            .position(position)
+                            .title(currentRestaurant.getName())
+                            .snippet(currentRestaurant.getAddress())
+                            .icon(BitmapDescriptorFactory
+                                    .fromResource(markerDrawable)));
+
+                }
+                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                    @Override
+                    public boolean onMarkerClick(Marker m) {
+                        /*Intent restaurantActivity = new Intent(requireActivity(), RestaurantActivity.class);
+                        Bundle b = new Bundle();
+                        b.putParcelable("restaurant", getRestaurantFromMarker(m, restaurants));
+                        restaurantActivity.putExtras(b);
+                        startActivity(restaurantActivity);
+*/
+                        NavHostFragment.findNavController(MapViewFragment.this).navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment);
+                        return false;
+                    }
+                });
+            }
+        });
+
+    }
+
+    private Restaurant getRestaurantFromMarker(Marker m, List<Restaurant> restaurants) {
+        for (Restaurant restaurant : restaurants) {
+            if (restaurant.getName().equals(m.getTitle())) {
+                return restaurant;
+            }
+        }
+        return null;
+    }
+
+
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         enableMyLocation();
         mMap.getUiSettings().setZoomControlsEnabled(true);
+        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_style));
+        try {
+            locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER, 1000, 10, locationListener);
+        } catch (SecurityException e) {
+            Log.d("logmap", "requestlocationupdateerror");
+        }
     }
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
@@ -136,44 +191,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             }
         }
         //updateLocationUI();
-    }
-
-    void test(PlacesClient placesClient) {
-        final List<Place.Field> placeFields = Collections.singletonList(Place.Field.NAME);
-        final List<Place.Field> arraylistField = new ArrayList<>();
-        arraylistField.add(Place.Field.TYPES);
-        arraylistField.add(Place.Field.NAME);
-        arraylistField.add(Place.Field.ADDRESS);
-        //arraylistField.add(Place.Field.ADDRESS_COMPONENTS);
-        //arraylistField.add(Place.Field.OPENING_HOURS);
-        arraylistField.add(Place.Field.PHOTO_METADATAS);
-
-        FindCurrentPlaceRequest request = FindCurrentPlaceRequest.newInstance(arraylistField);
-
-        if (ContextCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
-            placeResponse.addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if (task.isSuccessful()) {
-                        FindCurrentPlaceResponse response = (FindCurrentPlaceResponse) task.getResult();
-                        List<PlaceLikelihood> restaurants = new ArrayList<>();
-                        for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                            if (placeLikelihood.getPlace().getTypes().contains(Place.Type.RESTAURANT)) {
-                                restaurants.add(placeLikelihood);
-                            }
-                        }
-                        Log.d("gg", "onComplete: ");
-                    } else {
-                        Exception exception = task.getException();
-                        if (exception instanceof ApiException) {
-                            ApiException apiException = (ApiException) exception;
-                            Log.e("bg", "Place not found: " + apiException.getStatusCode());
-                        }
-                    }
-                }
-            });
-        }
     }
 
 }
