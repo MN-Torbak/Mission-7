@@ -14,7 +14,7 @@
     <string name="chosen">%s has chosen:  %s</string>
     <string name="not_chosen">%s hasn\'t chosen yet</string>
     <string name="joining">%s eats here!</string>
-    <string name="open">Open</string>
+    <string name="open">Open %sH%s</string>
     <string name="close">Close</string>
     <string name="unknown_schedule">Unknown schedule</string>
 

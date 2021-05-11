@@ -54,11 +54,11 @@ public class RestaurantActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_restaurant);
+        setContentView(R.layout.fragment_restaurant);
         ImageView avatarRestaurant = findViewById(R.id.avatar_restaurant);
         TextView nameRestaurant = findViewById(R.id.name_restaurant);
         TextView addressRestaurant = findViewById(R.id.address_restaurant);
-        mRecyclerView = findViewById(R.id.restaurantActivityRecyclerView);
+        mRecyclerView = findViewById(R.id.restaurantFragmentRecyclerView);
         getAllWorkmatesWhoEatHere();
 
         mSharedViewModel = new ViewModelProvider(this).get(DrawerSharedViewModel.class);
@@ -126,7 +126,7 @@ public class RestaurantActivity extends AppCompatActivity {
     private void displayWorkmates(List<Workmate> workmates) {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, RecyclerView.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
-        RestaurantActivityAdapter restaurantActivityAdapter = new RestaurantActivityAdapter(workmates);
+        RestaurantFragmentAdapter restaurantActivityAdapter = new RestaurantFragmentAdapter(workmates);
         restaurantActivityAdapter.notifyDataSetChanged();
         mRecyclerView.setAdapter(restaurantActivityAdapter);
     }

@@ -40,6 +40,7 @@ import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -99,38 +100,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mSharedViewModel = new ViewModelProvider(requireActivity()).get(DrawerSharedViewModel.class);
-        mSharedViewModel.liveRestaurant.observe(requireActivity(), new Observer<ArrayList<Restaurant>>() {
-            @Override
-            public void onChanged(final ArrayList<Restaurant> restaurants) {
-                for (Restaurant currentRestaurant : restaurants) {
-                    final LatLng position = (currentRestaurant.getLatlng());
-                    int markerDrawable = R.drawable.restaurant_empty_marker;
-                    if (currentRestaurant.getWorkmatesBeEating().size() > 0) {
-                        markerDrawable = R.drawable.restaurant_full_marker;
-                    }
-                    mMap.addMarker(new MarkerOptions()
-                            .position(position)
-                            .title(currentRestaurant.getName())
-                            .snippet(currentRestaurant.getAddress())
-                            .icon(BitmapDescriptorFactory
-                                    .fromResource(markerDrawable)));
 
-                }
-                mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                    @Override
-                    public boolean onMarkerClick(Marker m) {
-                        /*Intent restaurantActivity = new Intent(requireActivity(), RestaurantActivity.class);
-                        Bundle b = new Bundle();
-                        b.putParcelable("restaurant", getRestaurantFromMarker(m, restaurants));
-                        restaurantActivity.putExtras(b);
-                        startActivity(restaurantActivity);
-*/
-                        NavHostFragment.findNavController(MapViewFragment.this).navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment);
-                        return false;
-                    }
-                });
-            }
-        });
 
     }
 
@@ -156,6 +126,38 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         } catch (SecurityException e) {
             Log.d("logmap", "requestlocationupdateerror");
         }
+        mSharedViewModel.liveRestaurant.observe(requireActivity(), new Observer<ArrayList<Restaurant>>() {
+            @Override
+            public void onChanged(final ArrayList<Restaurant> restaurants) {
+                for (Restaurant currentRestaurant : restaurants) {
+                    final LatLng position = (currentRestaurant.getLatlng());
+                    int markerDrawable = R.drawable.restaurant_empty_marker;
+                    if (currentRestaurant.getWorkmatesBeEating().size() > 0) {
+                        markerDrawable = R.drawable.restaurant_full_marker;
+                    }
+                    if (mMap != null) {
+                        mMap.addMarker(new MarkerOptions()
+                                .position(position)
+                                .title(currentRestaurant.getName())
+                                .snippet(currentRestaurant.getAddress())
+                                .icon(BitmapDescriptorFactory
+                                        .fromResource(markerDrawable)));
+                    }
+
+                }
+                if (mMap != null) {
+                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                        @Override
+                        public boolean onMarkerClick(Marker m) {
+                            Bundle b = new Bundle();
+                            b.putParcelable("restaurant", getRestaurantFromMarker(m, restaurants));
+                            NavHostFragment.findNavController(MapViewFragment.this).navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment, b);
+                            return false;
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;

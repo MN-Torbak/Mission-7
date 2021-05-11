@@ -1,6 +1,5 @@
 package com.maxime.go4lunch;
 
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +15,9 @@ import com.maxime.go4lunch.model.Workmate;
 
 import java.util.List;
 
-public class RestaurantActivityAdapter extends RecyclerView.Adapter<com.maxime.go4lunch.RestaurantActivityAdapter.RestaurantActivityViewHolder> {
+public class RestaurantFragmentAdapter extends RecyclerView.Adapter<RestaurantFragmentAdapter.RestaurantActivityViewHolder> {
 
-    public RestaurantActivityAdapter(List<Workmate> pWorkmates) {
+    public RestaurantFragmentAdapter(List<Workmate> pWorkmates) {
         mWorkmates = pWorkmates;
     }
 
@@ -38,14 +37,14 @@ public class RestaurantActivityAdapter extends RecyclerView.Adapter<com.maxime.g
 
     @NonNull
     @Override
-    public com.maxime.go4lunch.RestaurantActivityAdapter.RestaurantActivityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public RestaurantFragmentAdapter.RestaurantActivityViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.info_workmate, parent, false);
-        return new com.maxime.go4lunch.RestaurantActivityAdapter.RestaurantActivityViewHolder(v);
+        return new RestaurantFragmentAdapter.RestaurantActivityViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final com.maxime.go4lunch.RestaurantActivityAdapter.RestaurantActivityViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RestaurantFragmentAdapter.RestaurantActivityViewHolder holder, int position) {
         final Workmate workmate = mWorkmates.get(position);
         Glide.with(holder.mAvatar.getContext())
                 .load(workmate.getAvatar())

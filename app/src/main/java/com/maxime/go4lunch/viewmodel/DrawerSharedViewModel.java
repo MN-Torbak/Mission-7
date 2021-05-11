@@ -162,10 +162,18 @@ public class DrawerSharedViewModel extends ViewModel {
     }
 
     public String getReadableOpeningHours(Period period, Context context) {
-        String open = context.getResources().getString(R.string.open) + Objects.requireNonNull(period.getOpen()).getTime().getHours() + "H" + period.getOpen().getTime().getMinutes() + "M";
-        String close = context.getResources().getString(R.string.close) + Objects.requireNonNull(period.getClose()).getTime().getHours() + "H" + period.getClose().getTime().getMinutes() + "M";
+        String open = context.getResources().getString(R.string.open, "" + Objects.requireNonNull(period.getOpen()).getTime().getHours(), "" + getDisplayableMinutes(period));
+        String close = context.getResources().getString(R.string.close) + Objects.requireNonNull(period.getClose()).getTime().getHours() + "H" + getDisplayableMinutes(period);
 
         return open + close;
+    }
+
+    private String getDisplayableMinutes(Period period) {
+        if (period.getClose().getTime().getMinutes() < 10) {
+            return "0" + period.getClose().getTime().getMinutes();
+        } else {
+            return "" + period.getClose().getTime().getMinutes();
+        }
     }
 
     private com.google.android.libraries.places.api.model.DayOfWeek getCurrentDayOfWeek() {

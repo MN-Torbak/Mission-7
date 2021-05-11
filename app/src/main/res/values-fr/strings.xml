@@ -40,7 +40,7 @@
     <string name="username_updated">Nom d\'utilisateur mis à jour !</string>
     <string name="useravatar_updated">Avatar mis à jour !</string>
     <string name="joining">%s mange ici!</string>
-    <string name="open">Ouverture</string>
+    <string name="open">Ouverture %sH%s</string>
     <string name="close">Fermeture</string>
     <string name="unknown_schedule">Horaire inconnue</string>
 </resources>

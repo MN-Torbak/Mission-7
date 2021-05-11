@@ -1,5 +1,6 @@
 package com.maxime.go4lunch.ui.listview;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,11 +8,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Restaurant;
+import com.maxime.go4lunch.ui.mapview.MapViewFragment;
 
 import java.util.List;
 
@@ -50,15 +54,24 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
 
     @Override
     public void onBindViewHolder(@NonNull final ListViewAdapter.ListViewHolder holder, int position) {
-        Restaurant restaurant = mRestaurant.get(position);
+        final Restaurant restaurant = mRestaurant.get(position);
         Glide.with(holder.mAvatar.getContext())
                 .load(restaurant.getUrlAvatar())
                 .into(holder.mAvatar);
         holder.mName.setText(restaurant.getName());
         holder.mAddress.setText(restaurant.getAddress());
         holder.mSchedule.setText(restaurant.getSchedule());
-    }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                Bundle b = new Bundle();
+                b.putParcelable("restaurant", restaurant);
+                Navigation.findNavController(view).navigate(R.id.action_navigation_list_view_to_restaurantDetailsFragment, b);
+
+            }
+        });
+    }
 
 
     @Override
