@@ -63,7 +63,7 @@ public class RestaurantActivity extends AppCompatActivity {
 
         mSharedViewModel = new ViewModelProvider(this).get(DrawerSharedViewModel.class);
         mSharedViewModel.getRestaurant(this);
-        mSharedViewModel.getWorkmates(this);
+        mSharedViewModel.getWorkmates();
         final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         if (getIntent().getExtras() == null) {
@@ -81,10 +81,10 @@ public class RestaurantActivity extends AppCompatActivity {
 
                         if (mWorkmate.getRestaurant().equals(restaurantProfil.getName())) {
                             choice = true;
-                            fab.setImageResource(R.drawable.ic_checkbox_green);
+                            fab.setImageResource(R.drawable.ic_checkbox_selected);
                         } else {
                             choice = false;
-                            fab.setImageResource(R.drawable.ic_checkbox_grey);
+                            fab.setImageResource(R.drawable.ic_checkbox_not_selected);
                         }
                     }
                 }
@@ -107,13 +107,13 @@ public class RestaurantActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (choice) {
                     choice = false;
-                    fab.setImageResource(R.drawable.ic_checkbox_grey);
+                    fab.setImageResource(R.drawable.ic_checkbox_not_selected);
                     UserHelper.updateUserRestaurant(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "aucun");
                     restaurantProfil.getWorkmatesBeEating().remove(mWorkmate);
                     getAllWorkmatesWhoEatHere();
                 } else {
                     choice = true;
-                    fab.setImageResource(R.drawable.ic_checkbox_green);
+                    fab.setImageResource(R.drawable.ic_checkbox_selected);
                     UserHelper.updateUserRestaurant(mWorkmate.getId(), restaurantProfil.getName());
                     restaurantProfil.getWorkmatesBeEating().add(mWorkmate);
                     getAllWorkmatesWhoEatHere();

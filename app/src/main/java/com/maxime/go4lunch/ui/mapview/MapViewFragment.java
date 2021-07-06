@@ -1,7 +1,6 @@
 package com.maxime.go4lunch.ui.mapview;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -19,7 +18,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -33,14 +31,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.RestaurantActivity;
 import com.maxime.go4lunch.model.Restaurant;
-import com.maxime.go4lunch.ui.RestaurantDetailsFragment;
 import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -70,6 +65,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                     return;
                 }
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 17));
+                mSharedViewModel.updateLocation(location);
             }
 
             @Override
@@ -131,9 +127,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             public void onChanged(final ArrayList<Restaurant> restaurants) {
                 for (Restaurant currentRestaurant : restaurants) {
                     final LatLng position = (currentRestaurant.getLatlng());
-                    int markerDrawable = R.drawable.restaurant_empty_marker;
+                    int markerDrawable = R.drawable.orange_icon_lunch;
                     if (currentRestaurant.getWorkmatesBeEating().size() > 0) {
-                        markerDrawable = R.drawable.restaurant_full_marker;
+                        markerDrawable = R.drawable.green_icon_lunch;
                     }
                     if (mMap != null) {
                         mMap.addMarker(new MarkerOptions()
@@ -164,7 +160,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+                == PackageManager.PERMISSION_GRANTED) { mMap.setMyLocationEnabled(true);
         } else {
             ActivityCompat.requestPermissions(getActivity(),
                     new String[]{ACCESS_FINE_LOCATION},
@@ -176,12 +172,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        //locationPermissionGranted = false;
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //locationPermissionGranted = true;
                     //TODO: location ici
                     try {
                         mMap.setMyLocationEnabled(true);
@@ -192,7 +186,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         }
-        //updateLocationUI();
     }
 
 }

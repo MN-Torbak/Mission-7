@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="dialog">
+        <item>One Star</item>
+        <item>Two Stars</item>
+        <item>Three Stars</item>
+    </string-array>
+</resources>

@@ -9,12 +9,21 @@
         android:id="@+id/nav_your_lunch"
         android:name="com.maxime.go4lunch.ui.yourlunch.YourLunchFragment"
         android:label="@string/menu_your_lunch"
-        tools:layout="@layout/fragment_your_lunch" />
+        tools:layout="@layout/fragment_your_lunch" >
+        <action
+            android:id="@+id/action_nav_your_lunch_to_restaurantDetailsFragment"
+            app:destination="@id/restaurantDetailsFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_settings"
         android:name="com.maxime.go4lunch.ui.settings.SettingsFragment"
         android:label="@string/menu_settings"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/restaurantDetailsFragment"
+        android:name="com.maxime.go4lunch.ui.RestaurantDetailsFragment"
+        android:label="RestaurantDetailsFragment" />
 
 </navigation>

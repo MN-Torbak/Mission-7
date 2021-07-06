@@ -1,6 +1,7 @@
 package com.maxime.go4lunch.ui.workmates;
 
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,11 +9,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.maxime.go4lunch.R;
+import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
 
 import java.util.List;
@@ -59,8 +62,17 @@ public class WorkmateAdapter extends RecyclerView.Adapter<WorkmateAdapter.Workma
 
             holder.mName.setText(holder.mName.getContext().getString(R.string.chosen, workmate.getName(), workmate.getRestaurant()));
         }
-    }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                Bundle b = new Bundle();
+                b.putString("restaurant", workmate.getRestaurant());
+                Navigation.findNavController(view).navigate(R.id.action_navigation_workmates_to_restaurantDetailsFragment, b);
+
+            }
+        });
+    }
 
 
     @Override

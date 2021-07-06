@@ -9,15 +9,18 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CenterCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Restaurant;
-import com.maxime.go4lunch.ui.mapview.MapViewFragment;
 
 import java.util.List;
+
+import static com.maxime.go4lunch.ui.listview.ListViewFragment.mLocation;
 
 public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListViewHolder> {
 
@@ -31,6 +34,11 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
         TextView mName;
         TextView mAddress;
         TextView mSchedule;
+        TextView mNumberWorkmate;
+        TextView mRange;
+        ImageView mOneStar;
+        ImageView mTwoStar;
+        ImageView mThreeStar;
         //TODO: ajouter le nombre de personnes ayant choisi ce restaurant et le nombre d'étoiles du restaurant
 
         ListViewHolder(@NonNull View itemView) {
@@ -39,6 +47,14 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
             mName = itemView.findViewById(R.id.name_listview);
             mAddress = itemView.findViewById(R.id.address_listview);
             mSchedule = itemView.findViewById(R.id.schedule_listview);
+            mNumberWorkmate = itemView.findViewById(R.id.number_of_workmate_here_listview);
+            mRange = itemView.findViewById(R.id.range_listview);
+            mOneStar = itemView.findViewById(R.id.one_star_listview);
+            mTwoStar = itemView.findViewById(R.id.two_star_listview);
+            mThreeStar = itemView.findViewById(R.id.three_star_listview);
+            mOneStar.setVisibility(View.INVISIBLE);
+            mTwoStar.setVisibility(View.INVISIBLE);
+            mThreeStar.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -55,12 +71,33 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
     @Override
     public void onBindViewHolder(@NonNull final ListViewAdapter.ListViewHolder holder, int position) {
         final Restaurant restaurant = mRestaurant.get(position);
+        RequestOptions requestOptions = new RequestOptions();
+        requestOptions = requestOptions.transforms(new CenterCrop(), new RoundedCorners(10));
         Glide.with(holder.mAvatar.getContext())
                 .load(restaurant.getUrlAvatar())
+                .apply(requestOptions)
                 .into(holder.mAvatar);
         holder.mName.setText(restaurant.getName());
         holder.mAddress.setText(restaurant.getAddress());
         holder.mSchedule.setText(restaurant.getSchedule());
+        holder.mNumberWorkmate.setText("("+ restaurant.getWorkmatesBeEating().size()+")");
+
+        float[] results = new float[1];
+        android.location.Location.distanceBetween(mLocation.getLatitude(), mLocation.getLongitude(), restaurant.getLatlng().latitude, restaurant.getLatlng().longitude, results);
+        int distanceInMeters = (int) results[0];
+        holder.mRange.setText((distanceInMeters)+"m");
+
+        if (restaurant.getStar() < 1) {
+            holder.mOneStar.setVisibility(View.VISIBLE);
+        } else if (restaurant.getStar() < 2) {
+            holder.mOneStar.setVisibility(View.VISIBLE);
+            holder.mTwoStar.setVisibility(View.VISIBLE);
+        } else if (restaurant.getStar() < 3) {
+            holder.mOneStar.setVisibility(View.VISIBLE);
+            holder.mTwoStar.setVisibility(View.VISIBLE);
+            holder.mThreeStar.setVisibility(View.VISIBLE);
+        }
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

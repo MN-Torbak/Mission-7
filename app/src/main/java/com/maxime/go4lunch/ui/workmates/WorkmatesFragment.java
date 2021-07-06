@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +24,8 @@ import com.maxime.go4lunch.model.Workmate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.widget.LinearLayout.VERTICAL;
+
 public class WorkmatesFragment extends Fragment {
 
 
@@ -34,6 +37,8 @@ public class WorkmatesFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_workmates, container, false);
         mRecyclerView = root.findViewById(R.id.fragmentWorkmatesRecyclerView);
         getAllDocs();
+        DividerItemDecoration itemDecor = new DividerItemDecoration(requireContext(), VERTICAL);
+        mRecyclerView.addItemDecoration(itemDecor);
         return root;
     }
 

@@ -7,22 +7,26 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Workmate;
 
-import static android.content.ContentValues.TAG;
 
 public class UserHelper {
 
     private static final String COLLECTION_NAME = "users";
+    private static final String COLLECTION_LIKE = "likes";
 
     // --- COLLECTION REFERENCE ---
 
-    public static CollectionReference getUsersCollection(){
+    public static CollectionReference getUsersCollection() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+    }
+
+    public static CollectionReference getLikesCollection() {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_LIKE);
     }
 
     // --- CREATE ---
@@ -32,10 +36,19 @@ public class UserHelper {
         return UserHelper.getUsersCollection().document(id).set(userToCreate);
     }
 
+    public static com.google.android.gms.tasks.Task<Void> createLike(String id, String workmateId, String restaurantId) {
+        Like likeToCreate = new Like(id, workmateId, restaurantId);
+        return UserHelper.getLikesCollection().document(id).set(likeToCreate);
+    }
+
     // --- GET ---
 
-    public static com.google.android.gms.tasks.Task<DocumentSnapshot> getUser(String id){
+    public static com.google.android.gms.tasks.Task<DocumentSnapshot> getUser(String id) {
         return UserHelper.getUsersCollection().document(id).get();
+    }
+
+    public static com.google.android.gms.tasks.Task<DocumentSnapshot> getLike(String id) {
+        return UserHelper.getLikesCollection().document(id).get();
     }
 
 
@@ -51,6 +64,10 @@ public class UserHelper {
 
     public static com.google.android.gms.tasks.Task<Void> updateUserRestaurant(String id, String restaurant) {
         return UserHelper.getUsersCollection().document(id).update("restaurant", restaurant);
+    }
+
+    public static com.google.android.gms.tasks.Task<Void> updateUserLikeRestaurant(String id, Integer starNumber) {
+        return UserHelper.getLikesCollection().document(id).update("starNumber", starNumber);
     }
 
     // --- DELETE ---

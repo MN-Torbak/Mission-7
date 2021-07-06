@@ -2,6 +2,7 @@ package com.maxime.go4lunch.viewmodel;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.api.UserHelper;
+import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
 
@@ -42,6 +44,8 @@ public class DrawerSharedViewModel extends ViewModel {
 
     public MutableLiveData<ArrayList<Restaurant>> liveRestaurant = new MutableLiveData<>();
     public MutableLiveData<ArrayList<Workmate>> liveWorkmates = new MutableLiveData<>();
+    public MutableLiveData<ArrayList<Like>> liveLikes = new MutableLiveData<>();
+    public MutableLiveData<Location> liveLocation = new MutableLiveData<>();
 
     public void getRestaurant(final Context context) {
         final PlacesClient placesClient = Places.createClient(context);
@@ -50,6 +54,8 @@ public class DrawerSharedViewModel extends ViewModel {
         arraylistField.add(Place.Field.TYPES);
         arraylistField.add(Place.Field.NAME);
         arraylistField.add(Place.Field.ADDRESS);
+        //arraylistField.add(Place.Field.PHONE_NUMBER);
+        //arraylistField.add(Place.Field.WEBSITE_URI);
         arraylistField.add(Place.Field.PHOTO_METADATAS);
         arraylistField.add(Place.Field.LAT_LNG);
 
@@ -89,7 +95,11 @@ public class DrawerSharedViewModel extends ViewModel {
         }
     }
 
-    public void getWorkmates(Context context) {
+    public void updateLocation(Location location) {
+        liveLocation.setValue(location);
+    }
+
+    public void getWorkmates() {
         UserHelper.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -126,10 +136,39 @@ public class DrawerSharedViewModel extends ViewModel {
         liveRestaurant.postValue(restaurants);
     }
 
+    public void getAllLikes() {
+        UserHelper.getLikesCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    ArrayList<Like> likes = new ArrayList<>();
+                    for (DocumentSnapshot document : task.getResult()) {
+                        Like like = document.toObject(Like.class);
+                        assert like != null;
+                        likes.add(like);
+                    }
+                    liveLikes.setValue(likes);
+                }
+            }
+        });
+    }
+
+    public void getLikesForRestaurant(Restaurant restaurant) {
+        getAllLikes();
+        ArrayList<Like> likes = liveLikes.getValue();
+        for (Like like : likes) {
+            if (like.getRestaurantId().equals(restaurant.getId())) {
+                restaurant.getLikes().add(like);
+            }
+        }
+    }
+
     public FetchPlaceRequest getFetchPlaceRequest(String id) {
         List<Place.Field> detailsArraylistField = new ArrayList<>();
         detailsArraylistField.add(Place.Field.ID);
         detailsArraylistField.add(Place.Field.OPENING_HOURS);
+        detailsArraylistField.add(Place.Field.PHONE_NUMBER);
+        detailsArraylistField.add(Place.Field.WEBSITE_URI);
         return FetchPlaceRequest.builder(id, detailsArraylistField)
                 .build();
     }
@@ -143,6 +182,8 @@ public class DrawerSharedViewModel extends ViewModel {
                             public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
                                 fetchPlaceResponse.getPlace().getOpeningHours();
                                 restaurant.setSchedule(getOpeningHoursStringForToday(fetchPlaceResponse.getPlace(), context));
+                                restaurant.setPhoneNumber(fetchPlaceResponse.getPlace().getPhoneNumber());
+                                restaurant.setWebSite(fetchPlaceResponse.getPlace().getWebsiteUri());
                             }
                         });
     }
@@ -163,13 +204,13 @@ public class DrawerSharedViewModel extends ViewModel {
 
     public String getReadableOpeningHours(Period period, Context context) {
         String open = context.getResources().getString(R.string.open, "" + Objects.requireNonNull(period.getOpen()).getTime().getHours(), "" + getDisplayableMinutes(period));
-        String close = context.getResources().getString(R.string.close) + Objects.requireNonNull(period.getClose()).getTime().getHours() + "H" + getDisplayableMinutes(period);
+        String close = context.getResources().getString(R.string.close, "" + Objects.requireNonNull(period.getClose()).getTime().getHours(), "" + getDisplayableMinutes(period));
 
-        return open + close;
+        return open + " - " + close;
     }
 
     private String getDisplayableMinutes(Period period) {
-        if (period.getClose().getTime().getMinutes() < 10) {
+        if (Objects.requireNonNull(period.getClose()).getTime().getMinutes() < 10) {
             return "0" + period.getClose().getTime().getMinutes();
         } else {
             return "" + period.getClose().getTime().getMinutes();
