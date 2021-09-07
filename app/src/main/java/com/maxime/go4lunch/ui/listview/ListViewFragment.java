@@ -4,8 +4,13 @@ import android.location.Location;
 import android.os.Bundle;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +27,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
+import com.maxime.go4lunch.ui.yourlunch.YourLunchFragment;
 import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
 
 import java.util.ArrayList;
@@ -34,6 +40,11 @@ public class ListViewFragment extends Fragment {
 
     public static Location mLocation;
     RecyclerView mRecyclerView;
+    ListViewAdapter listViewAdapter;
+    Spinner mTriSpinner;
+
+    @NonNull
+    public SortMethod sortMethod = SortMethod.NONE;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -65,18 +76,47 @@ public class ListViewFragment extends Fragment {
                 mLocation = location;
             }
         });
+        getActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.autocomplete_background).setVisibility(View.VISIBLE);
+        mTriSpinner = getActivity().findViewById(R.id.tri_spinner);
+        getActivity().findViewById(R.id.tri_spinner).setVisibility(View.INVISIBLE);
+        getActivity().findViewById(R.id.button_tri).setVisibility(View.VISIBLE);
 
+        mTriSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+               if (position == 1) {
+                   sortMethod = SortMethod.PROXI;
+                } else if (position == 2) {
+                   sortMethod = SortMethod.STARS;
+               } else if (position == 3) {
+                   sortMethod = SortMethod.NUMBEROFWORKMATES;
+               }
+                listViewAdapter.updateFilter(sortMethod, mLocation);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                sortMethod = SortMethod.NONE;
+                listViewAdapter.updateFilter(sortMethod, mLocation);
+            }
+        });
     }
+
 
     private void displayListView(List<Restaurant> restaurants) {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity(), RecyclerView.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
-        ListViewAdapter listViewAdapter = new ListViewAdapter(restaurants);
+        listViewAdapter = new ListViewAdapter(restaurants);
         listViewAdapter.notifyDataSetChanged();
         mRecyclerView.setAdapter(listViewAdapter);
     }
 
-
+    public enum SortMethod {
+        PROXI,
+        STARS,
+        NUMBEROFWORKMATES,
+        NONE
+    }
 }
 
 

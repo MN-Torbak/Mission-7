@@ -1,57 +1,59 @@
-package com.maxime.go4lunch.ui;
+package com.maxime.go4lunch.ui.Restaurant;
 
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.maxime.go4lunch.DrawerActivity;
-import com.maxime.go4lunch.Notifications.MyNotificationPublisher;
+import com.maxime.go4lunch.Notifications.NotificationsWorker;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.RestaurantFragmentAdapter;
 import com.maxime.go4lunch.api.UserHelper;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
 import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 public class RestaurantDetailsFragment extends Fragment {
 
@@ -67,6 +69,7 @@ public class RestaurantDetailsFragment extends Fragment {
     Button phoneNumberRestaurant;
     Button likeRestaurant;
     Button webSiteRestaurant;
+    ProgressBar mProgressBar;
     boolean choice;
     FloatingActionButton fab;
 
@@ -87,8 +90,16 @@ public class RestaurantDetailsFragment extends Fragment {
         phoneNumberRestaurant = view.findViewById(R.id.phone_number);
         webSiteRestaurant = view.findViewById(R.id.website);
         mRecyclerView = view.findViewById(R.id.restaurantFragmentRecyclerView);
-        getActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.GONE);
-        getActivity().findViewById(R.id.autocomplete_background).setVisibility(View.GONE);
+        mProgressBar = view.findViewById(R.id.progressBar);
+        if (getActivity().findViewById(R.id.autocomplete_fragment) != null && getActivity().findViewById(R.id.autocomplete_fragment).getVisibility() == View.VISIBLE) {
+            getActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.GONE);
+        }
+        if (getActivity().findViewById(R.id.autocomplete_background) != null && getActivity().findViewById(R.id.autocomplete_background).getVisibility() == View.VISIBLE) {
+            getActivity().findViewById(R.id.autocomplete_background).setVisibility(View.GONE);
+        }
+        if (getActivity().findViewById(R.id.button_tri) != null && getActivity().findViewById(R.id.button_tri).getVisibility() == View.VISIBLE) {
+            getActivity().findViewById(R.id.button_tri).setVisibility(View.GONE);
+        }
         mSharedViewModel = new ViewModelProvider(this).get(DrawerSharedViewModel.class);
         mSharedViewModel.getWorkmates();
         mSharedViewModel.getAllLikes();
@@ -96,14 +107,29 @@ public class RestaurantDetailsFragment extends Fragment {
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         likeRestaurant = (Button) view.findViewById(R.id.like);
 
+        ProgressBar spinner = new android.widget.ProgressBar(
+                getContext(),
+                null,
+                android.R.attr.progressBarStyle);
+
+        spinner.getIndeterminateDrawable().setColorFilter(0xFFFF0000, android.graphics.PorterDuff.Mode.MULTIPLY);
+
 
         final Bundle b = this.getArguments();
-        if (b != null && b.getParcelable("restaurant") != null) {
-            restaurantProfil = b.getParcelable("restaurant");
-            displayRestaurantInformations();
-            getAllWorkmatesWhoEatHere();
-            observeWorkmate();
-            scheduleNotification(getContext(), 1000, NOTIF_ID);
+        if (b != null && b.getString("restaurant") != null) {
+            mSharedViewModel.getRestaurantFromId(getContext(), b.getString("restaurant"));
+            mSharedViewModel.liveMyRestaurant.observe(requireActivity(), new Observer<Restaurant>() {
+                @Override
+                public void onChanged(final Restaurant restaurant) {
+                    restaurantProfil = restaurant;
+                    displayRestaurantInformations();
+                    getAllWorkmatesWhoEatHere();
+                    observeWorkmate();
+                    if (mProgressBar.getVisibility() == View.VISIBLE) {
+                        mProgressBar.setVisibility(View.INVISIBLE);
+                    }
+                }
+            });
         } else {
             mSharedViewModel.liveRestaurant.observe(requireActivity(), new Observer<ArrayList<Restaurant>>() {
                 @Override
@@ -115,7 +141,9 @@ public class RestaurantDetailsFragment extends Fragment {
                                 displayRestaurantInformations();
                                 getAllWorkmatesWhoEatHere();
                                 observeWorkmate();
-                                scheduleNotification(getContext(), 1000, NOTIF_ID);
+                                if (mProgressBar.getVisibility() == View.VISIBLE) {
+                                    mProgressBar.setVisibility(View.INVISIBLE);
+                                }
                             }
                         }
                     }
@@ -131,14 +159,24 @@ public class RestaurantDetailsFragment extends Fragment {
                     choice = false;
                     fab.setImageResource(R.drawable.ic_checkbox_not_selected);
                     UserHelper.updateUserRestaurant(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "aucun");
+                    UserHelper.updateUserRestaurantAddress(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "unknow");
+                    UserHelper.updateUserRestaurantID(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "unknow");
                     restaurantProfil.getWorkmatesBeEating().remove(mWorkmate);
                     getAllWorkmatesWhoEatHere();
+                    WorkManager.getInstance(requireContext()).cancelAllWorkByTag("Notif");
                 } else {
                     choice = true;
                     fab.setImageResource(R.drawable.ic_checkbox_selected);
                     UserHelper.updateUserRestaurant(mWorkmate.getId(), restaurantProfil.getName());
+                    UserHelper.updateUserRestaurantAddress(mWorkmate.getId(), restaurantProfil.getAddress());
+                    UserHelper.updateUserRestaurantID(mWorkmate.getId(), restaurantProfil.getId());
+                    Date now = new Date();
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
+                    String result = formatter.format(now);
+                    UserHelper.updateUserRestaurantDateChoice(mWorkmate.getId(), result);
                     restaurantProfil.getWorkmatesBeEating().add(mWorkmate);
                     getAllWorkmatesWhoEatHere();
+                    createNotif();
                 }
             }
         });
@@ -202,7 +240,7 @@ public class RestaurantDetailsFragment extends Fragment {
                     if (workmate.getId().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
                         mWorkmate = workmate;
 
-                        if (mWorkmate.getRestaurant().equals(restaurantProfil.getName())) {
+                        if (workmate.getRestaurant().equals(restaurantProfil.getName())) {
                             choice = true;
                             fab.setImageResource(R.drawable.ic_checkbox_selected);
                         } else {
@@ -215,55 +253,31 @@ public class RestaurantDetailsFragment extends Fragment {
         });
     }
 
-
-    public void scheduleNotification(Context context, long delay, int notificationId) {//delay is after how much time(in millis) from current time you want to schedule the notification
-        createNotificationChannel();
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationCompat.CATEGORY_EVENT)
-                .setContentTitle(getTitle())
-                .setContentText(getText())
-                .setAutoCancel(true)
-                .setSmallIcon(R.drawable.ic_checkbox_selected);
-
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
-        notificationManager.notify(123, builder.build());
-
-        Intent intent = new Intent(context, DrawerActivity.class);
-        PendingIntent activity = PendingIntent.getActivity(context, notificationId, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        builder.setContentIntent(activity);
-
-        Notification notification = builder.build();
-
-        Intent notificationIntent = new Intent(context, MyNotificationPublisher.class);
-        notificationIntent.putExtra(MyNotificationPublisher.NOTIFICATION_ID, notificationId);
-        notificationIntent.putExtra(MyNotificationPublisher.NOTIFICATION, notification);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, notificationId, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-        long futureInMillis = SystemClock.elapsedRealtime() + delay;
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, futureInMillis, pendingIntent);
-
-
+    public OneTimeWorkRequest createNotif() {
+        return new OneTimeWorkRequest.Builder(NotificationsWorker.class)
+                .setInitialDelay(getMilliseconds(), TimeUnit.MILLISECONDS)
+                .addTag("Notif")
+                .build();
     }
 
+    private long getMilliseconds() {
+        //TODO: calculer les millisecondes entre maintenant et le prochain midi
+        Date date = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        long now = System.currentTimeMillis();
+        long todayMidday = calendar.getTimeInMillis();
+        long difference = todayMidday - now;
 
-    private long getNextNotifTime() {
-        return System.currentTimeMillis() + 10000;
-    }
-
-    private String getTitle() {
-        return "Go4Lunch";
-    }
-
-    private String getText() {
-        String workmatelist = "";
-        if (restaurantProfil.getWorkmatesBeEating() != null && restaurantProfil != null && restaurantProfil.getWorkmatesBeEating().size() > 1 ) {
-            for (Workmate workmate : restaurantProfil.getWorkmatesBeEating()) {
-                workmatelist = workmate + workmate.getName();
-            }
-            return R.string.choice + restaurantProfil.getName() + " " + restaurantProfil.getAddress() + R.string.join + workmatelist;
+        if (difference > 0) {
+            return difference;
+        } else {
+            //TODO: notification à déclencher lendemain midi
+            return difference + (24 * 60 * 60 * 1000);
         }
-        return R.string.choice + restaurantProfil.getName() + " " + restaurantProfil.getAddress();
     }
 
     private void observeLike(final Integer intCase) {
@@ -283,22 +297,6 @@ public class RestaurantDetailsFragment extends Fragment {
         });
     }
 
-    private void createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is new and not in the support library
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "toto";
-            String description = "tatra";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(NotificationCompat.CATEGORY_EVENT, name, importance);
-            channel.setDescription(description);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = requireContext().getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-
     private void displayRestaurantInformations() {
         nameRestaurant.setText(restaurantProfil.getName());
         addressRestaurant.setText(restaurantProfil.getAddress());
@@ -306,6 +304,16 @@ public class RestaurantDetailsFragment extends Fragment {
                 .load(restaurantProfil.getUrlAvatar())
                 .apply(RequestOptions.centerCropTransform())
                 .into(avatarRestaurant);
+    }
+
+    public FetchPlaceRequest getFetchPlaceRequest(String id) {
+        List<Place.Field> detailsArraylistField = new ArrayList<>();
+        detailsArraylistField.add(Place.Field.ID);
+        detailsArraylistField.add(Place.Field.OPENING_HOURS);
+        detailsArraylistField.add(Place.Field.PHONE_NUMBER);
+        detailsArraylistField.add(Place.Field.WEBSITE_URI);
+        return FetchPlaceRequest.builder(id, detailsArraylistField)
+                .build();
     }
 
     private void displayWorkmates(List<Workmate> workmates) {

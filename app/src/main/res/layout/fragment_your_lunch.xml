@@ -17,7 +17,8 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/autocomplete_fragment"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
+        app:layout_constrainedWidth="true"
         android:layout_height="40dp"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="5dp"
@@ -25,9 +26,34 @@
         android:layout_marginBottom="5dp"
         android:background="@drawable/round_corner"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/button_tri"
         app:layout_constraintStart_toStartOf="parent"
         android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment" />
+
+    <Button
+        android:id="@+id/button_tri"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginRight="5dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/autocomplete_fragment"
+        android:background="@drawable/button_tri" />
+
+    <Spinner
+        android:id="@+id/tri_spinner"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:dropDownHorizontalOffset="0dp"
+        android:dropDownVerticalOffset="0dp"
+        android:dropDownWidth="160dp"
+        android:paddingTop="2sp"
+        android:spinnerMode="dropdown"
+        app:layout_constraintTop_toBottomOf="@id/button_tri"
+        app:layout_constraintEnd_toEndOf="parent">
+    </Spinner>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"

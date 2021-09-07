@@ -93,7 +93,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/avatar_listview"
         app:layout_constraintTop_toBottomOf="@id/number_of_workmate_here_listview"
-        app:srcCompat="@drawable/ic_star"/>
+        app:srcCompat="@drawable/ic_star_full"/>
+
+    <ImageView
+        android:id="@+id/one_star_empty"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/avatar_listview"
+        app:layout_constraintTop_toBottomOf="@id/number_of_workmate_here_listview"
+        app:srcCompat="@drawable/ic_star_empty"/>
 
     <ImageView
         android:id="@+id/two_star_listview"
@@ -102,7 +112,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/one_star_listview"
         app:layout_constraintTop_toBottomOf="@id/number_of_workmate_here_listview"
-        app:srcCompat="@drawable/ic_star"/>
+        app:srcCompat="@drawable/ic_star_full"/>
+
+    <ImageView
+        android:id="@+id/two_star_empty"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/one_star_listview"
+        app:layout_constraintTop_toBottomOf="@id/number_of_workmate_here_listview"
+        app:srcCompat="@drawable/ic_star_empty"/>
 
     <ImageView
         android:id="@+id/three_star_listview"
@@ -111,7 +130,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/two_star_listview"
         app:layout_constraintTop_toBottomOf="@id/number_of_workmate_here_listview"
-        app:srcCompat="@drawable/ic_star"/>
+        app:srcCompat="@drawable/ic_star_full"/>
+
+    <ImageView
+        android:id="@+id/three_star_empty"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/two_star_listview"
+        app:layout_constraintTop_toBottomOf="@id/number_of_workmate_here_listview"
+        app:srcCompat="@drawable/ic_star_empty"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

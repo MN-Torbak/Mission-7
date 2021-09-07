@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
 
 import java.util.List;
@@ -67,7 +66,7 @@ public class WorkmateAdapter extends RecyclerView.Adapter<WorkmateAdapter.Workma
             public void onClick(View view) {
 
                 Bundle b = new Bundle();
-                b.putString("restaurant", workmate.getRestaurant());
+                b.putString("restaurant", workmate.getRestaurantID());
                 Navigation.findNavController(view).navigate(R.id.action_navigation_workmates_to_restaurantDetailsFragment, b);
 
             }

@@ -55,4 +55,11 @@
 
     <string name="choice">You chose: </string>
     <string name="join">You will be joined by: </string>
+
+    <string-array name="tri_spinner">
+        <item>Trier par</item>
+        <item>Trier par distance</item>
+        <item>Trier par étoiles</item>
+        <item>Trier par collègues</item>
+    </string-array>
 </resources>

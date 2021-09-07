@@ -46,6 +46,7 @@ public class DrawerSharedViewModel extends ViewModel {
     public MutableLiveData<ArrayList<Workmate>> liveWorkmates = new MutableLiveData<>();
     public MutableLiveData<ArrayList<Like>> liveLikes = new MutableLiveData<>();
     public MutableLiveData<Location> liveLocation = new MutableLiveData<>();
+    public MutableLiveData<Restaurant> liveMyRestaurant = new MutableLiveData<>();
 
     public void getRestaurant(final Context context) {
         final PlacesClient placesClient = Places.createClient(context);
@@ -165,12 +166,30 @@ public class DrawerSharedViewModel extends ViewModel {
 
     public FetchPlaceRequest getFetchPlaceRequest(String id) {
         List<Place.Field> detailsArraylistField = new ArrayList<>();
+        detailsArraylistField.add(Place.Field.NAME);
+        detailsArraylistField.add(Place.Field.TYPES);
+        detailsArraylistField.add(Place.Field.ADDRESS);
+        detailsArraylistField.add(Place.Field.PHOTO_METADATAS);
         detailsArraylistField.add(Place.Field.ID);
+        detailsArraylistField.add(Place.Field.LAT_LNG);
         detailsArraylistField.add(Place.Field.OPENING_HOURS);
         detailsArraylistField.add(Place.Field.PHONE_NUMBER);
         detailsArraylistField.add(Place.Field.WEBSITE_URI);
         return FetchPlaceRequest.builder(id, detailsArraylistField)
                 .build();
+    }
+
+    public void getRestaurantFromId(Context context, String id) {
+        final PlacesClient placesClient = Places.createClient(context);
+        placesClient.fetchPlace(getFetchPlaceRequest(id))
+                .addOnSuccessListener(
+                        new OnSuccessListener<FetchPlaceResponse>() {
+                            @Override
+                            public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
+                                liveMyRestaurant.setValue(new Restaurant(fetchPlaceResponse.getPlace()));
+                            }
+                        });
+
     }
 
     public void getPlaceOpeningHours(PlacesClient placesClient, Place place, final Restaurant restaurant, final Context context) {

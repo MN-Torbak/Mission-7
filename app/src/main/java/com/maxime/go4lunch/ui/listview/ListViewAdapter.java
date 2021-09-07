@@ -1,5 +1,6 @@
 package com.maxime.go4lunch.ui.listview;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Restaurant;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.maxime.go4lunch.ui.listview.ListViewFragment.mLocation;
@@ -39,7 +41,9 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
         ImageView mOneStar;
         ImageView mTwoStar;
         ImageView mThreeStar;
-        //TODO: ajouter le nombre de personnes ayant choisi ce restaurant et le nombre d'étoiles du restaurant
+        ImageView mOneStarEmpty;
+        ImageView mTwoStarEmpty;
+        ImageView mThreeStarEmpty;
 
         ListViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -52,9 +56,10 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
             mOneStar = itemView.findViewById(R.id.one_star_listview);
             mTwoStar = itemView.findViewById(R.id.two_star_listview);
             mThreeStar = itemView.findViewById(R.id.three_star_listview);
-            mOneStar.setVisibility(View.INVISIBLE);
-            mTwoStar.setVisibility(View.INVISIBLE);
-            mThreeStar.setVisibility(View.INVISIBLE);
+            mOneStarEmpty = itemView.findViewById(R.id.one_star_empty);
+            mTwoStarEmpty = itemView.findViewById(R.id.two_star_empty);
+            mThreeStarEmpty = itemView.findViewById(R.id.three_star_empty);
+
         }
     }
 
@@ -66,6 +71,23 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.info_listview, parent, false);
         return new ListViewHolder(v);
+    }
+
+    void updateFilter(ListViewFragment.SortMethod sortingRestaurants, Location location) {
+        switch (sortingRestaurants) {
+            case PROXI:
+                Collections.sort(mRestaurant, new Restaurant.RestaurantProxiComparator(location));
+                break;
+            case STARS:
+                Collections.sort(mRestaurant, new Restaurant.RestaurantStarsComparator());
+                break;
+            case NUMBEROFWORKMATES:
+                Collections.sort(mRestaurant, new Restaurant.RestaurantNumberOfWorkmatesComparator());
+                break;
+            case NONE:
+                break;
+        }
+        notifyDataSetChanged();
     }
 
     @Override
@@ -87,15 +109,37 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
         int distanceInMeters = (int) results[0];
         holder.mRange.setText((distanceInMeters)+"m");
 
-        if (restaurant.getStar() < 1) {
-            holder.mOneStar.setVisibility(View.VISIBLE);
-        } else if (restaurant.getStar() < 2) {
-            holder.mOneStar.setVisibility(View.VISIBLE);
-            holder.mTwoStar.setVisibility(View.VISIBLE);
-        } else if (restaurant.getStar() < 3) {
+        float star = restaurant.getStar();
+
+
+        if (star >= 2.5 ) {
             holder.mOneStar.setVisibility(View.VISIBLE);
             holder.mTwoStar.setVisibility(View.VISIBLE);
             holder.mThreeStar.setVisibility(View.VISIBLE);
+            holder.mOneStarEmpty.setVisibility(View.INVISIBLE);
+            holder.mTwoStarEmpty.setVisibility(View.INVISIBLE);
+            holder.mThreeStarEmpty.setVisibility(View.INVISIBLE);
+        } else if (star >= 1.5) {
+            holder.mOneStar.setVisibility(View.VISIBLE);
+            holder.mTwoStar.setVisibility(View.VISIBLE);
+            holder.mThreeStar.setVisibility(View.INVISIBLE);
+            holder.mOneStarEmpty.setVisibility(View.INVISIBLE);
+            holder.mTwoStarEmpty.setVisibility(View.INVISIBLE);
+            holder.mThreeStarEmpty.setVisibility(View.VISIBLE);
+        } else if (star >= 0.5) {
+            holder.mOneStar.setVisibility(View.VISIBLE);
+            holder.mTwoStar.setVisibility(View.INVISIBLE);
+            holder.mThreeStar.setVisibility(View.INVISIBLE);
+            holder.mOneStarEmpty.setVisibility(View.INVISIBLE);
+            holder.mTwoStarEmpty.setVisibility(View.VISIBLE);
+            holder.mThreeStarEmpty.setVisibility(View.VISIBLE);
+        } else {
+            holder.mOneStar.setVisibility(View.INVISIBLE);
+            holder.mTwoStar.setVisibility(View.INVISIBLE);
+            holder.mThreeStar.setVisibility(View.INVISIBLE);
+            holder.mOneStarEmpty.setVisibility(View.VISIBLE);
+            holder.mTwoStarEmpty.setVisibility(View.VISIBLE);
+            holder.mThreeStarEmpty.setVisibility(View.VISIBLE);
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -103,7 +147,7 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
             public void onClick(View view) {
 
                 Bundle b = new Bundle();
-                b.putParcelable("restaurant", restaurant);
+                b.putString("restaurant", restaurant.getId());
                 Navigation.findNavController(view).navigate(R.id.action_navigation_list_view_to_restaurantDetailsFragment, b);
 
             }

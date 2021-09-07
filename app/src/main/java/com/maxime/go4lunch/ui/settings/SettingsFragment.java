@@ -3,6 +3,7 @@ package com.maxime.go4lunch.ui.settings;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -35,14 +36,16 @@ import com.maxime.go4lunch.api.UserHelper;
 
 import java.util.Objects;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class SettingsFragment extends Fragment {
 
     ImageView avatar;
     EditText name;
     EditText avatarEdit;
-    TextView mail;
     Button updateName;
     Button updateAvatar;
+    Button notifications;
     Button signOut;
     Button delete;
 
@@ -51,17 +54,21 @@ public class SettingsFragment extends Fragment {
     private static final int UPDATE_USERNAME = 30;
     private static final int UPDATE_USERAVATAR = 40;
 
+    private SharedPreferences mPreferences;
+    public static final String NOTIFICATION = "notification";
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
         avatar = (ImageView) view.findViewById(R.id.avatar);
         name = (EditText) view.findViewById(R.id.name);
         avatarEdit = (EditText) view.findViewById(R.id.avatar_edit);
-        //mail = (TextView) view.findViewById(R.id.mail);
         updateName = view.findViewById(R.id.button_update);
         updateAvatar = view.findViewById(R.id.button_update_avatar);
+        notifications = view.findViewById(R.id.button_notification);
         signOut = view.findViewById(R.id.button_sign_out);
         delete = view.findViewById(R.id.button_delete);
+        mPreferences = getContext().getSharedPreferences(NOTIFICATION, MODE_PRIVATE);
         this.updateUIWhenCreating();
 
         // --------------------
@@ -82,6 +89,13 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        notifications.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickNotifications();
+            }
+        });
+
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,9 +113,9 @@ public class SettingsFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private void updateUIWhenCreating(){
+    private void updateUIWhenCreating() {
 
-        if (this.getCurrentUser() != null){
+        if (this.getCurrentUser() != null) {
 
             if (this.getCurrentUser().getPhotoUrl() == null) {
                 Glide.with(requireContext())
@@ -109,8 +123,6 @@ public class SettingsFragment extends Fragment {
                         .apply(RequestOptions.circleCropTransform())
                         .into(avatar);
             }
-            //String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
-            //this.mail.setText(email);
 
             UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
@@ -128,6 +140,11 @@ public class SettingsFragment extends Fragment {
                     }
                 }
             });
+            if (mPreferences.getBoolean("notification_boolean", true)) {
+                notifications.setBackground(getResources().getDrawable(R.drawable.notification_check));
+            } else if (mPreferences.getBoolean("notification_boolean", false)) {
+                notifications.setBackground(getResources().getDrawable(R.drawable.notification_cross));
+            }
         }
     }
 
@@ -137,6 +154,17 @@ public class SettingsFragment extends Fragment {
 
     public void onClickUpdateAvatarButton() {
         this.updateUseravatarInFirebase();
+    }
+
+    public void onClickNotifications() {
+
+        if (mPreferences.getBoolean("notification_boolean", true)) {
+            mPreferences.edit().putBoolean("notification_boolean", false).apply();
+            notifications.setBackground(getResources().getDrawable(R.drawable.notification_cross));
+        } else {
+            mPreferences.edit().putBoolean("notification_boolean", true).apply();
+            notifications.setBackground(getResources().getDrawable(R.drawable.notification_check));
+        }
     }
 
     public void onClickSignOutButton() {
@@ -156,24 +184,24 @@ public class SettingsFragment extends Fragment {
                 .show();
     }
 
-    private void updateUsernameInFirebase(){
+    private void updateUsernameInFirebase() {
 
         String username = this.name.getText().toString();
 
-        if (this.getCurrentUser() != null){
-            if (!username.isEmpty() &&  !username.equals(getString(R.string.info_no_username_found))){
+        if (this.getCurrentUser() != null) {
+            if (!username.isEmpty() && !username.equals(getString(R.string.info_no_username_found))) {
                 UserHelper.updateUserName(this.getCurrentUser().getUid(), username)
                         .addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
             }
         }
     }
 
-    private void updateUseravatarInFirebase(){
+    private void updateUseravatarInFirebase() {
 
         String useravatar = this.avatarEdit.getText().toString();
 
-        if (this.getCurrentUser() != null){
-            if (!useravatar.isEmpty() &&  !useravatar.equals(getString(R.string.info_no_useravatar_found))){
+        if (this.getCurrentUser() != null) {
+            if (!useravatar.isEmpty() && !useravatar.equals(getString(R.string.info_no_useravatar_found))) {
                 UserHelper.updateUserAvatar(this.getCurrentUser().getUid(), useravatar)
                         .addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERAVATAR));
             }
@@ -181,23 +209,23 @@ public class SettingsFragment extends Fragment {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private void signOutUserFromFirebase(){
+    private void signOutUserFromFirebase() {
         AuthUI.getInstance()
                 .signOut(requireContext())
                 .addOnSuccessListener(requireActivity(), this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
     }
 
-    private void deleteUserFromFirebase(){
+    private void deleteUserFromFirebase() {
         if (this.getCurrentUser() != null) {
             UserHelper.deleteUser(this.getCurrentUser().getUid()/*.addOnFailureListener(getActivity().onFailureListener())*/);
         }
     }
 
-    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin){
+    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
         return new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                switch (origin){
+                switch (origin) {
                     case UPDATE_USERNAME:
                         Toast.makeText(getContext(), getString(R.string.username_updated), Toast.LENGTH_LONG).show();
                         break;
@@ -228,7 +256,7 @@ public class SettingsFragment extends Fragment {
         return (this.getCurrentUser() != null);
     }
 
-    protected OnFailureListener onFailureListener(){
+    protected OnFailureListener onFailureListener() {
         return new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {

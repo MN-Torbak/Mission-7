@@ -39,6 +39,10 @@ public class WorkmatesFragment extends Fragment {
         getAllDocs();
         DividerItemDecoration itemDecor = new DividerItemDecoration(requireContext(), VERTICAL);
         mRecyclerView.addItemDecoration(itemDecor);
+        getActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.autocomplete_background).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.tri_spinner).setVisibility(View.GONE);
+        getActivity().findViewById(R.id.button_tri).setVisibility(View.GONE);
         return root;
     }
 
@@ -65,7 +69,7 @@ public class WorkmatesFragment extends Fragment {
         return workmates;
     }
 
-    public void getAllDocs() {
+    private void getAllDocs() {
         UserHelper.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {

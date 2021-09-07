@@ -1,4 +1,4 @@
-package com.maxime.go4lunch;
+package com.maxime.go4lunch.ui.Restaurant;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Workmate;
 
 import java.util.List;

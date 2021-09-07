@@ -13,6 +13,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Workmate;
 
+import java.text.DateFormat;
+
 
 public class UserHelper {
 
@@ -64,6 +66,18 @@ public class UserHelper {
 
     public static com.google.android.gms.tasks.Task<Void> updateUserRestaurant(String id, String restaurant) {
         return UserHelper.getUsersCollection().document(id).update("restaurant", restaurant);
+    }
+
+    public static com.google.android.gms.tasks.Task<Void> updateUserRestaurantAddress(String id, String restaurant_address) {
+        return UserHelper.getUsersCollection().document(id).update("restaurant_address", restaurant_address);
+    }
+
+    public static com.google.android.gms.tasks.Task<Void> updateUserRestaurantID(String id, String restaurantID) {
+        return UserHelper.getUsersCollection().document(id).update("restaurantID", restaurantID);
+    }
+
+    public static com.google.android.gms.tasks.Task<Void> updateUserRestaurantDateChoice(String id, String restaurant_date_choice) {
+        return UserHelper.getUsersCollection().document(id).update("restaurant_date_choice", restaurant_date_choice);
     }
 
     public static com.google.android.gms.tasks.Task<Void> updateUserLikeRestaurant(String id, Integer starNumber) {

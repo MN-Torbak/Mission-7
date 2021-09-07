@@ -1,5 +1,6 @@
 package com.maxime.go4lunch.model;
 
+import android.location.Location;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,8 +11,8 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.PlaceLikelihood;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 public class Restaurant implements Parcelable {
 
@@ -22,7 +23,7 @@ public class Restaurant implements Parcelable {
     private String address;
     private String phoneNumber;
     private Uri webSite;
-    private Integer star;
+    private float star;
     private List<Workmate> workmatesBeEating = new ArrayList<>();
     private List<Like> likes = new ArrayList<>();
 
@@ -77,7 +78,6 @@ public class Restaurant implements Parcelable {
         //webSite = Objects.requireNonNull(place.getWebsiteUri());
         schedule = "//";
         latlng = place.getLatLng();
-
     }
 
     public String getId() {
@@ -138,7 +138,7 @@ public class Restaurant implements Parcelable {
 
     public float getStar() {
         int stars = sum(getStarNumberForRestaurant());
-        int likesSize = getLikes().size();
+        int likesSize = likes.size();
         if (likesSize == 0) {
             return 0;
         } else {
@@ -146,7 +146,7 @@ public class Restaurant implements Parcelable {
         }
     }
 
-    public void setStar(Integer star) {
+    public void setStar(Float star) {
         this.star = star;
     }
 
@@ -211,7 +211,7 @@ public class Restaurant implements Parcelable {
 
     public List<Integer> getStarNumberForRestaurant() {
         List<Integer> starnumber = new ArrayList<>();
-        for (Like like : getLikes()) {
+        for (Like like : likes) {
             starnumber.add(like.getStarNumber());
         }
         return starnumber;
@@ -224,5 +224,40 @@ public class Restaurant implements Parcelable {
         return sum;
     }
 
+    public static class RestaurantProxiComparator implements Comparator<Restaurant> {
+        Location mLocation;
+        public RestaurantProxiComparator(Location location) {
+            mLocation = location;
+        }
+        @Override
+        public int compare(Restaurant left, Restaurant right) {
+            int distanceLeft = getRange(mLocation, left);
+            int distanceRight = getRange(mLocation, right);
+            return distanceLeft-distanceRight;
+        }
+    }
+
+    public static class RestaurantStarsComparator implements Comparator<Restaurant> {
+        @Override
+        public int compare(Restaurant left, Restaurant right) {
+            Float starLeft = left.getStar();
+            Float starRight = right.getStar();
+            return starRight.compareTo(starLeft);
+        }
+    }
+
+    public static class RestaurantNumberOfWorkmatesComparator implements Comparator<Restaurant> {
+        @Override
+        public int compare(Restaurant left, Restaurant right) {
+            return right.getWorkmatesBeEating().size()-(left.getWorkmatesBeEating().size());
+        }
+    }
+
+    public static int getRange(Location myLocation, Restaurant restaurant) {
+        float[] results = new float[1];
+        android.location.Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), restaurant.getLatlng().latitude, restaurant.getLatlng().longitude, results);
+        int distanceInMeters = (int) results[0];
+        return distanceInMeters;
+    }
 
 }

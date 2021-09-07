@@ -9,6 +9,8 @@
 
 
 
+
+
     <application
         android:name="androidx.multidex.MultiDexApplication"
         android:allowBackup="true"
@@ -19,12 +21,6 @@
         android:theme="@style/AppTheme">
 
         <receiver android:name="com.maxime.go4lunch.Notifications.MyNotificationPublisher"/>
-
-        <activity
-            android:name="com.maxime.go4lunch.RestaurantActivity"
-            android:label="@string/title_activity_restaurant"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

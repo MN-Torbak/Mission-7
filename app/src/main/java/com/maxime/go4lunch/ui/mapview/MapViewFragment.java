@@ -89,6 +89,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         } catch (SecurityException e) {
             Log.d("logmap", "requestlocationupdateerror");
         }
+        getActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.autocomplete_background).setVisibility(View.VISIBLE);
+        getActivity().findViewById(R.id.tri_spinner).setVisibility(View.GONE);
+        getActivity().findViewById(R.id.button_tri).setVisibility(View.GONE);
         return view;
     }
 
@@ -146,7 +150,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                         @Override
                         public boolean onMarkerClick(Marker m) {
                             Bundle b = new Bundle();
-                            b.putParcelable("restaurant", getRestaurantFromMarker(m, restaurants));
+                            b.putString("restaurant", getRestaurantFromMarker(m, restaurants).getId());
                             NavHostFragment.findNavController(MapViewFragment.this).navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment, b);
                             return false;
                         }

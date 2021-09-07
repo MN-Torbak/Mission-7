@@ -23,7 +23,7 @@
 
     <fragment
         android:id="@+id/restaurantDetailsFragment"
-        android:name="com.maxime.go4lunch.ui.RestaurantDetailsFragment"
+        android:name="com.maxime.go4lunch.ui.Restaurant.RestaurantDetailsFragment"
         android:label="RestaurantDetailsFragment" />
 
 </navigation>
