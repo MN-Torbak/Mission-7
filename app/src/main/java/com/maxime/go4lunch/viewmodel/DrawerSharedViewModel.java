@@ -129,7 +129,7 @@ public class DrawerSharedViewModel extends ViewModel {
                 assert restaurants != null;
                 for (Restaurant restaurant : restaurants) {
                     if (restaurant.getName().equals(workmate.getRestaurant())) {
-                        restaurant.getWorkmatesBeEating().add(workmate);
+                        restaurant.getWorkmatesEatingHere().add(workmate);
                     }
                 }
             }

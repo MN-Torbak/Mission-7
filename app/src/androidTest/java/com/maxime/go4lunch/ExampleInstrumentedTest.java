@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
     public void useAppContext() {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.maxime.go4launch", appContext.getPackageName());
+        assertEquals("com.maxime.go4lunch", appContext.getPackageName());
     }
 }

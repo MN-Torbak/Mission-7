@@ -132,7 +132,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 for (Restaurant currentRestaurant : restaurants) {
                     final LatLng position = (currentRestaurant.getLatlng());
                     int markerDrawable = R.drawable.orange_icon_lunch;
-                    if (currentRestaurant.getWorkmatesBeEating().size() > 0) {
+                    if (currentRestaurant.getWorkmatesEatingHere().size() > 0) {
                         markerDrawable = R.drawable.green_icon_lunch;
                     }
                     if (mMap != null) {

@@ -29,6 +29,7 @@
         <activity
             android:name="com.maxime.go4lunch.DrawerActivity"
             android:label="@string/title_activity_main"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
 
 
@@ -36,6 +37,7 @@
         <activity
             android:name="com.maxime.go4lunch.MainActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

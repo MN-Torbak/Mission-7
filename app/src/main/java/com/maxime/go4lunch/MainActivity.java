@@ -93,15 +93,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data) {
-
         IdpResponse response = IdpResponse.fromResultIntent(data);
-
         if (requestCode == RC_SIGN_IN) {
-            if (resultCode == RESULT_OK) { // SUCCESS
-                this.createUserInFirestore();
+            if (resultCode == RESULT_OK) {
+                if (response!=null && response.isNewUser()) {
+                    this.createUserInFirestore();
+                }
                 startDrawerActivity();
-            } else { // ERRORS
-                Toast.makeText(getApplicationContext(), toFriendlyMessage(response.getError().getErrorCode()), Toast.LENGTH_LONG).show();
+            } else {
+                if (response!=null && response.getError()!=null) {
+                    Toast.makeText(getApplicationContext(), toFriendlyMessage(response.getError().getErrorCode()), Toast.LENGTH_LONG).show();
+                }
             }
         }
     }

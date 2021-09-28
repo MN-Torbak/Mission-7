@@ -54,7 +54,6 @@ public class WorkmatesFragment extends Fragment {
         mRecyclerView.setAdapter(workmateAdapter);
     }
 
-    // TODO: faire ça mieux, comparator ?
     private List<Workmate> orderWorkmates (Task<QuerySnapshot> task) {
         List<Workmate> workmates = new ArrayList<>();
         for (DocumentSnapshot document : task.getResult()) {

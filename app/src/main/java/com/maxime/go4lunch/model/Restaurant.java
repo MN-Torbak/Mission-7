@@ -24,7 +24,7 @@ public class Restaurant implements Parcelable {
     private String phoneNumber;
     private Uri webSite;
     private float star;
-    private List<Workmate> workmatesBeEating = new ArrayList<>();
+    private List<Workmate> workmatesEatingHere = new ArrayList<>();
     private List<Like> likes = new ArrayList<>();
 
     private LatLng latlng;
@@ -54,9 +54,9 @@ public class Restaurant implements Parcelable {
             urlAvatar = "https://www.b2b-infos.com/wp-content/uploads/Fast-food-en-France.jpg";
         }
         address = placeLikelihood.getPlace().getAddress();
-        //phoneNumber = placeLikelihood.getPlace().getPhoneNumber();
-        //webSite = Objects.requireNonNull(placeLikelihood.getPlace().getWebsiteUri());
-        schedule = "//";
+        phoneNumber = placeLikelihood.getPlace().getPhoneNumber();
+        webSite = placeLikelihood.getPlace().getWebsiteUri();
+        schedule = "?";
         latlng = placeLikelihood.getPlace().getLatLng();
 
     }
@@ -74,9 +74,9 @@ public class Restaurant implements Parcelable {
             urlAvatar = "https://www.b2b-infos.com/wp-content/uploads/Fast-food-en-France.jpg";
         }
         address = place.getAddress();
-        //phoneNumber = place.getPhoneNumber();
-        //webSite = Objects.requireNonNull(place.getWebsiteUri());
-        schedule = "//";
+        phoneNumber = place.getPhoneNumber();
+        webSite = place.getWebsiteUri();
+        schedule = "?";
         latlng = place.getLatLng();
     }
 
@@ -158,12 +158,12 @@ public class Restaurant implements Parcelable {
         this.latlng = latlng;
     }
 
-    public List<Workmate> getWorkmatesBeEating() {
-        return workmatesBeEating;
+    public List<Workmate> getWorkmatesEatingHere() {
+        return workmatesEatingHere;
     }
 
-    public void setWorkmatesBeEating(List<Workmate> workmatesBeEating) {
-        this.workmatesBeEating = workmatesBeEating;
+    public void setWorkmatesEatingHere(List<Workmate> workmatesEatingHere) {
+        this.workmatesEatingHere = workmatesEatingHere;
     }
 
     public List<Like> getLikes() {
@@ -249,7 +249,7 @@ public class Restaurant implements Parcelable {
     public static class RestaurantNumberOfWorkmatesComparator implements Comparator<Restaurant> {
         @Override
         public int compare(Restaurant left, Restaurant right) {
-            return right.getWorkmatesBeEating().size()-(left.getWorkmatesBeEating().size());
+            return right.getWorkmatesEatingHere().size()-(left.getWorkmatesEatingHere().size());
         }
     }
 

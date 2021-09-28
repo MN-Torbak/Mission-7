@@ -18,9 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.work.OneTimeWorkRequest;
@@ -32,7 +29,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -161,7 +157,7 @@ public class RestaurantDetailsFragment extends Fragment {
                     UserHelper.updateUserRestaurant(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "aucun");
                     UserHelper.updateUserRestaurantAddress(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "unknow");
                     UserHelper.updateUserRestaurantID(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "unknow");
-                    restaurantProfil.getWorkmatesBeEating().remove(mWorkmate);
+                    restaurantProfil.getWorkmatesEatingHere().remove(mWorkmate);
                     getAllWorkmatesWhoEatHere();
                     WorkManager.getInstance(requireContext()).cancelAllWorkByTag("Notif");
                 } else {
@@ -174,7 +170,7 @@ public class RestaurantDetailsFragment extends Fragment {
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
                     String result = formatter.format(now);
                     UserHelper.updateUserRestaurantDateChoice(mWorkmate.getId(), result);
-                    restaurantProfil.getWorkmatesBeEating().add(mWorkmate);
+                    restaurantProfil.getWorkmatesEatingHere().add(mWorkmate);
                     getAllWorkmatesWhoEatHere();
                     createNotif();
                 }

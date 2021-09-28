@@ -29,8 +29,8 @@
 
         <ImageView
             android:id="@+id/drawer_avatar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:contentDescription="@string/nav_header_desc"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,26 +39,25 @@
 
         <TextView
             android:id="@+id/drawer_name"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:text="@string/nav_profile_name"
             android:textStyle="bold"
             android:textSize="17sp"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/drawer_mail"
-            app:layout_constraintStart_toEndOf="@id/drawer_avatar"
-            app:layout_constraintTop_toBottomOf="parent" />
+            app:layout_constraintStart_toEndOf="@id/drawer_avatar" />
 
         <TextView
             android:id="@+id/drawer_mail"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginBottom="20dp"
             android:text="@string/nav_profile_mail"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/drawer_avatar"
             app:layout_constraintTop_toBottomOf="@id/drawer_name" />
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -102,7 +102,7 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
         holder.mName.setText(restaurant.getName());
         holder.mAddress.setText(restaurant.getAddress());
         holder.mSchedule.setText(restaurant.getSchedule());
-        holder.mNumberWorkmate.setText("("+ restaurant.getWorkmatesBeEating().size()+")");
+        holder.mNumberWorkmate.setText("("+ restaurant.getWorkmatesEatingHere().size()+")");
 
         float[] results = new float[1];
         android.location.Location.distanceBetween(mLocation.getLatitude(), mLocation.getLongitude(), restaurant.getLatlng().latitude, restaurant.getLatlng().longitude, results);

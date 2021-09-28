@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "991996982901-3c2jepmn3ufjbrmcf9icvb9iaapete1i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.maxime.go4lunch",
+            "certificate_hash": "b8484ecb7b49c64b1cb87cc63623014e51588365"
+          }
+        },
+        {
           "client_id": "991996982901-g4qv8a5dvihimhku4n5f85abremaf6j9.apps.googleusercontent.com",
           "client_type": 3
         }
