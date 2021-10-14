@@ -4,9 +4,6 @@ import android.location.Location;
 import android.os.Bundle;
 
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -21,14 +18,9 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
-import com.maxime.go4lunch.ui.yourlunch.YourLunchFragment;
-import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
+import com.maxime.go4lunch.viewmodel.SharedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +52,7 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final DrawerSharedViewModel sharedViewModel = new ViewModelProvider(requireActivity()).get(DrawerSharedViewModel.class);
+        final SharedViewModel sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         sharedViewModel.liveRestaurant.observe(requireActivity(), new Observer<ArrayList<Restaurant>>() {
             @Override
             public void onChanged(ArrayList<Restaurant> restaurants) {

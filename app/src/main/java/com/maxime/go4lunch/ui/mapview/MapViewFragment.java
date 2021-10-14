@@ -32,7 +32,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Restaurant;
-import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
+import com.maxime.go4lunch.viewmodel.SharedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
-    private DrawerSharedViewModel mSharedViewModel;
+    private SharedViewModel mSharedViewModel;
     private GoogleMap mMap;
     private LocationListener locationListener;
     private LocationManager locationManager;
@@ -99,7 +99,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mSharedViewModel = new ViewModelProvider(requireActivity()).get(DrawerSharedViewModel.class);
+        mSharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
 
 
     }

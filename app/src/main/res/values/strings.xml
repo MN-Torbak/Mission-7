@@ -18,6 +18,9 @@
     <string name="close">Close %sH%s</string>
     <string name="unknown_schedule">Unknown schedule</string>
 
+    <string name="facebook_application_id" translatable="false">187118033500985</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb187118033500985</string>
+
     <string name="menu_your_lunch">YOUR LUNCH</string>
     <string name="menu_settings">SETTINGS</string>
     <string name="menu_logout">LOGOUT</string>

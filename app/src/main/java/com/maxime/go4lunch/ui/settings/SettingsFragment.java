@@ -13,13 +13,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -32,7 +32,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.api.UserHelper;
+import com.maxime.go4lunch.api.UserManager;
+import com.maxime.go4lunch.viewmodel.SharedViewModel;
 
 import java.util.Objects;
 
@@ -54,6 +55,7 @@ public class SettingsFragment extends Fragment {
     private static final int UPDATE_USERNAME = 30;
     private static final int UPDATE_USERAVATAR = 40;
 
+    SharedViewModel mSharedViewModel;
     private SharedPreferences mPreferences;
     public static final String NOTIFICATION = "notification";
 
@@ -68,12 +70,9 @@ public class SettingsFragment extends Fragment {
         notifications = view.findViewById(R.id.button_notification);
         signOut = view.findViewById(R.id.button_sign_out);
         delete = view.findViewById(R.id.button_delete);
-        mPreferences = getContext().getSharedPreferences(NOTIFICATION, MODE_PRIVATE);
+        mPreferences = requireContext().getSharedPreferences(NOTIFICATION, MODE_PRIVATE);
+        mSharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
         this.updateUIWhenCreating();
-
-        // --------------------
-        // ACTIONS
-        // --------------------
 
         updateName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,19 +114,20 @@ public class SettingsFragment extends Fragment {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void updateUIWhenCreating() {
 
-        if (this.getCurrentUser() != null) {
+        if (this.mSharedViewModel.getCurrentUser() != null) {
 
-            if (this.getCurrentUser().getPhotoUrl() == null) {
+            if (this.mSharedViewModel.getCurrentUser().getPhotoUrl() == null) {
                 Glide.with(requireContext())
                         .load("https://www.icône.com/images/icones/2/9/face-plain-2.png")
                         .apply(RequestOptions.circleCropTransform())
                         .into(avatar);
             }
 
-            UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            mSharedViewModel.getUser(this.mSharedViewModel.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     Workmate currentWorkmate = documentSnapshot.toObject(Workmate.class);
+                    assert currentWorkmate != null;
                     String username = TextUtils.isEmpty(currentWorkmate.getName()) ? getString(R.string.info_no_username_found) : currentWorkmate.getName();
                     name.setText(username);
                     String useravatar = TextUtils.isEmpty(currentWorkmate.getAvatar()) ? getString(R.string.info_no_useravatar_found) : currentWorkmate.getAvatar();
@@ -188,9 +188,9 @@ public class SettingsFragment extends Fragment {
 
         String username = this.name.getText().toString();
 
-        if (this.getCurrentUser() != null) {
+        if (this.mSharedViewModel.getCurrentUser() != null) {
             if (!username.isEmpty() && !username.equals(getString(R.string.info_no_username_found))) {
-                UserHelper.updateUserName(this.getCurrentUser().getUid(), username)
+                mSharedViewModel.updateUserName(this.mSharedViewModel.getCurrentUser().getUid(), username)
                         .addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERNAME));
             }
         }
@@ -200,9 +200,9 @@ public class SettingsFragment extends Fragment {
 
         String useravatar = this.avatarEdit.getText().toString();
 
-        if (this.getCurrentUser() != null) {
+        if (this.mSharedViewModel.getCurrentUser() != null) {
             if (!useravatar.isEmpty() && !useravatar.equals(getString(R.string.info_no_useravatar_found))) {
-                UserHelper.updateUserAvatar(this.getCurrentUser().getUid(), useravatar)
+                mSharedViewModel.updateUserAvatar(this.mSharedViewModel.getCurrentUser().getUid(), useravatar)
                         .addOnFailureListener(this.onFailureListener()).addOnSuccessListener(this.updateUIAfterRESTRequestsCompleted(UPDATE_USERAVATAR));
             }
         }
@@ -216,8 +216,8 @@ public class SettingsFragment extends Fragment {
     }
 
     private void deleteUserFromFirebase() {
-        if (this.getCurrentUser() != null) {
-            UserHelper.deleteUser(this.getCurrentUser().getUid()/*.addOnFailureListener(getActivity().onFailureListener())*/);
+        if (this.mSharedViewModel.getCurrentUser() != null) {
+            mSharedViewModel.deleteUser(this.mSharedViewModel.getCurrentUser().getUid());
         }
     }
 
@@ -241,19 +241,9 @@ public class SettingsFragment extends Fragment {
         };
     }
 
-
     private void startMainActivity() {
         Intent intent = new Intent(getActivity(), MainActivity.class);
         startActivity(intent);
-    }
-
-    @Nullable
-    protected FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
-    }
-
-    protected Boolean isCurrentUserLogged() {
-        return (this.getCurrentUser() != null);
     }
 
     protected OnFailureListener onFailureListener() {

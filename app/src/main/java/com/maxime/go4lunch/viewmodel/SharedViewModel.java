@@ -24,10 +24,11 @@ import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.api.UserHelper;
+import com.maxime.go4lunch.api.UserManager;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
@@ -40,13 +41,70 @@ import java.util.Objects;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
-public class DrawerSharedViewModel extends ViewModel {
+public class SharedViewModel extends ViewModel {
+
+    UserManager mUserManager;
+    public SharedViewModel() {
+        mUserManager = new UserManager();
+    }
 
     public MutableLiveData<ArrayList<Restaurant>> liveRestaurant = new MutableLiveData<>();
     public MutableLiveData<ArrayList<Workmate>> liveWorkmates = new MutableLiveData<>();
     public MutableLiveData<ArrayList<Like>> liveLikes = new MutableLiveData<>();
     public MutableLiveData<Location> liveLocation = new MutableLiveData<>();
     public MutableLiveData<Restaurant> liveMyRestaurant = new MutableLiveData<>();
+
+    public Task<Void> createUser(String id, String avatar, String name) {
+        return mUserManager.createUser(id, avatar, name);
+    }
+
+    public Task<Void> createLike(String id, String workmateId, String restaurantId) {
+        return mUserManager.createLike(id, workmateId, restaurantId);
+    }
+
+    public com.google.android.gms.tasks.Task<DocumentSnapshot> getUser(String id) {
+        return mUserManager.getUser(id);
+    }
+
+    public FirebaseUser getCurrentUser() {
+        return mUserManager.getCurrentUser();
+    }
+
+    public com.google.android.gms.tasks.Task<DocumentSnapshot> getLike(String id) {
+        return mUserManager.getLike(id);
+    }
+
+    public Task<Void> updateUserName(String id, String name) {
+        return mUserManager.updateUserName(id, name);
+    }
+
+    public Task<Void> updateUserAvatar(String id, String avatar) {
+        return mUserManager.updateUserAvatar(id, avatar);
+    }
+
+    public void updateUserRestaurant(String id, String restaurant) {
+        mUserManager.updateUserRestaurant(id, restaurant);
+    }
+
+    public void updateUserRestaurantAddress(String id, String restaurant_address) {
+        mUserManager.updateUserRestaurantAddress(id, restaurant_address);
+    }
+
+    public void updateUserRestaurantID(String id, String restaurantID) {
+        mUserManager.updateUserRestaurantID(id, restaurantID);
+    }
+
+    public void updateUserRestaurantDateChoice(String id, String restaurant_date_choice) {
+        mUserManager.updateUserRestaurantDateChoice(id, restaurant_date_choice);
+    }
+
+    public void updateUserLikeRestaurant(String id, Integer starNumber) {
+        mUserManager.updateUserLikeRestaurant(id, starNumber);
+    }
+
+    public void deleteUser(String id) {
+        mUserManager.deleteUser(id);
+    }
 
     public void getRestaurant(final Context context) {
         final PlacesClient placesClient = Places.createClient(context);
@@ -55,8 +113,6 @@ public class DrawerSharedViewModel extends ViewModel {
         arraylistField.add(Place.Field.TYPES);
         arraylistField.add(Place.Field.NAME);
         arraylistField.add(Place.Field.ADDRESS);
-        //arraylistField.add(Place.Field.PHONE_NUMBER);
-        //arraylistField.add(Place.Field.WEBSITE_URI);
         arraylistField.add(Place.Field.PHOTO_METADATAS);
         arraylistField.add(Place.Field.LAT_LNG);
 
@@ -101,7 +157,7 @@ public class DrawerSharedViewModel extends ViewModel {
     }
 
     public void getWorkmates() {
-        UserHelper.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        UserManager.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -138,7 +194,7 @@ public class DrawerSharedViewModel extends ViewModel {
     }
 
     public void getAllLikes() {
-        UserHelper.getLikesCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        UserManager.getLikesCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {

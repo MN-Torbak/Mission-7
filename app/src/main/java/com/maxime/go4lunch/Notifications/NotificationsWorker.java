@@ -17,11 +17,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.maxime.go4lunch.MainActivity;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.api.UserHelper;
+import com.maxime.go4lunch.api.UserManager;
 import com.maxime.go4lunch.model.Workmate;
 import com.maxime.go4lunch.ui.settings.SettingsFragment;
+import com.maxime.go4lunch.viewmodel.SharedViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -32,8 +32,8 @@ import java.util.Objects;
 
 public class NotificationsWorker extends Worker {
 
-    public static final String TASK_ID = "";
     private SharedPreferences mPreferences;
+    SharedViewModel mSharedViewModel;
 
     public NotificationsWorker(
             @NonNull Context context,
@@ -71,7 +71,7 @@ public class NotificationsWorker extends Worker {
     }
 
     private void getUser() {
-        DocumentReference docRef = UserHelper.getUsersCollection().document(Objects.requireNonNull(getCurrentUser()).getUid());
+        DocumentReference docRef = UserManager.getUsersCollection().document(Objects.requireNonNull(getCurrentUser()).getUid());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -113,7 +113,7 @@ public class NotificationsWorker extends Worker {
     }
 
     private void getAllDocs(String restaurantName, String restaurantAddress, String restaurantDate) {
-        UserHelper.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        UserManager.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {

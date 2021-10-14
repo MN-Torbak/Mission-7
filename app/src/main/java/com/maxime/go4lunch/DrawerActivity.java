@@ -1,32 +1,23 @@
 package com.maxime.go4lunch;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
-import com.maxime.go4lunch.ui.Restaurant.RestaurantDetailsFragment;
 import com.maxime.go4lunch.ui.settings.SettingsFragment;
 import com.maxime.go4lunch.ui.yourlunch.YourLunchFragment;
-import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
+import com.maxime.go4lunch.viewmodel.SharedViewModel;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
@@ -41,13 +32,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class DrawerActivity extends AppCompatActivity {
 
     private static final int SIGN_OUT_TASK = 10;
     private AppBarConfiguration mAppBarConfiguration;
-    DrawerSharedViewModel mDrawerSharedViewModel;
+    SharedViewModel mSharedViewModel;
     public TextView Name;
     public TextView Mail;
     public ImageView Avatar;
@@ -64,10 +54,10 @@ public class DrawerActivity extends AppCompatActivity {
         Mail = findViewById(R.id.drawer_mail);
         Avatar = findViewById(R.id.drawer_avatar);
         Places.initialize(this, "AIzaSyC5PnYLjeSjD1CHBrujXoKqUt0yozB86bk");
-        mDrawerSharedViewModel = new ViewModelProvider(this).get(DrawerSharedViewModel.class);
-        mDrawerSharedViewModel.getRestaurant(this);
-        mDrawerSharedViewModel.getWorkmates();
-        mDrawerSharedViewModel.getAllLikes();
+        mSharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        mSharedViewModel.getRestaurant(this);
+        mSharedViewModel.getWorkmates();
+        mSharedViewModel.getAllLikes();
         NavigationView navigationView = findViewById(R.id.nav_drawer_view);
         View headerView = navigationView.getHeaderView(0);
         TextView navUsername = (TextView) headerView.findViewById(R.id.drawer_name);
@@ -85,7 +75,8 @@ public class DrawerActivity extends AppCompatActivity {
         navigationView.getMenu().findItem(R.id.nav_your_lunch).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                observeWorkmate(mWorkmate);
+                mSharedViewModel.getWorkmates();
+                navigate(mWorkmate);
                 return true;
             }
         });
@@ -151,25 +142,25 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private void getWorkmate(ImageView avatar, TextView name, TextView mail) {
-        mDrawerSharedViewModel.liveWorkmates.observe(this, new Observer<ArrayList<Workmate>>() {
+        mSharedViewModel.liveWorkmates.observe(this, new Observer<ArrayList<Workmate>>() {
             @Override
             public void onChanged(final ArrayList<Workmate> workmates) {
                 for (Workmate workmate : workmates) {
-                    if (workmate.getId().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
+                    if (workmate.getId().equals(mSharedViewModel.getCurrentUser().getUid())) {
                         mWorkmate = workmate;
                         Glide.with(avatar.getContext())
                                 .load((mWorkmate.getAvatar()))
                                 .apply(RequestOptions.circleCropTransform())
                                 .into(avatar);
                         name.setText(mWorkmate.getName());
-                        mail.setText(getCurrentUser().getEmail());
+                        mail.setText(mSharedViewModel.getCurrentUser().getEmail());
                     }
                 }
             }
         });
     }
 
-    private void observeWorkmate(Workmate workmate) {
+    private void navigate(Workmate workmate) {
         if (!workmate.getRestaurant().equals("aucun")) {
             Bundle b = new Bundle();
             b.putString("restaurant", workmate.getRestaurantID());
@@ -181,29 +172,19 @@ public class DrawerActivity extends AppCompatActivity {
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
             closeDrawer();
+        } else {
+            YourLunchFragment yourLunchFragment = new YourLunchFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.nav_host_fragment, yourLunchFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            closeDrawer();
         }
     }
 
     public void closeDrawer() {
         drawer.closeDrawers();
-    }
-
-    @Nullable
-    protected FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
-    }
-
-    protected Boolean isCurrentUserLogged() {
-        return (this.getCurrentUser() != null);
-    }
-
-    protected OnFailureListener onFailureListener() {
-        return new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getApplicationContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
-            }
-        };
     }
 
 }

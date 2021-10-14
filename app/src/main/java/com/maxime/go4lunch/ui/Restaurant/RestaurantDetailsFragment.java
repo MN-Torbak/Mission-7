@@ -36,11 +36,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.maxime.go4lunch.Notifications.NotificationsWorker;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.api.UserHelper;
+import com.maxime.go4lunch.api.UserManager;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
-import com.maxime.go4lunch.viewmodel.DrawerSharedViewModel;
+import com.maxime.go4lunch.viewmodel.SharedViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -53,11 +53,10 @@ import java.util.concurrent.TimeUnit;
 
 public class RestaurantDetailsFragment extends Fragment {
 
-    private static final int NOTIF_ID = 123;
     Restaurant restaurantProfil;
     Workmate mWorkmate;
     RecyclerView mRecyclerView;
-    DrawerSharedViewModel mSharedViewModel;
+    SharedViewModel mSharedViewModel;
 
     TextView nameRestaurant;
     ImageView avatarRestaurant;
@@ -87,16 +86,16 @@ public class RestaurantDetailsFragment extends Fragment {
         webSiteRestaurant = view.findViewById(R.id.website);
         mRecyclerView = view.findViewById(R.id.restaurantFragmentRecyclerView);
         mProgressBar = view.findViewById(R.id.progressBar);
-        if (getActivity().findViewById(R.id.autocomplete_fragment) != null && getActivity().findViewById(R.id.autocomplete_fragment).getVisibility() == View.VISIBLE) {
-            getActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.GONE);
+        if (requireActivity().findViewById(R.id.autocomplete_fragment) != null && requireActivity().findViewById(R.id.autocomplete_fragment).getVisibility() == View.VISIBLE) {
+            requireActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.GONE);
         }
-        if (getActivity().findViewById(R.id.autocomplete_background) != null && getActivity().findViewById(R.id.autocomplete_background).getVisibility() == View.VISIBLE) {
-            getActivity().findViewById(R.id.autocomplete_background).setVisibility(View.GONE);
+        if (requireActivity().findViewById(R.id.autocomplete_background) != null && requireActivity().findViewById(R.id.autocomplete_background).getVisibility() == View.VISIBLE) {
+            requireActivity().findViewById(R.id.autocomplete_background).setVisibility(View.GONE);
         }
-        if (getActivity().findViewById(R.id.button_tri) != null && getActivity().findViewById(R.id.button_tri).getVisibility() == View.VISIBLE) {
-            getActivity().findViewById(R.id.button_tri).setVisibility(View.GONE);
+        if (requireActivity().findViewById(R.id.button_tri) != null && requireActivity().findViewById(R.id.button_tri).getVisibility() == View.VISIBLE) {
+            requireActivity().findViewById(R.id.button_tri).setVisibility(View.GONE);
         }
-        mSharedViewModel = new ViewModelProvider(this).get(DrawerSharedViewModel.class);
+        mSharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
         mSharedViewModel.getWorkmates();
         mSharedViewModel.getAllLikes();
         mSharedViewModel.getRestaurant(requireActivity());
@@ -154,26 +153,27 @@ public class RestaurantDetailsFragment extends Fragment {
                 if (choice) {
                     choice = false;
                     fab.setImageResource(R.drawable.ic_checkbox_not_selected);
-                    UserHelper.updateUserRestaurant(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "aucun");
-                    UserHelper.updateUserRestaurantAddress(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "unknow");
-                    UserHelper.updateUserRestaurantID(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), "unknow");
+                    mSharedViewModel.updateUserRestaurant(mWorkmate.getId(), "aucun");
+                    mSharedViewModel.updateUserRestaurantAddress(mWorkmate.getId(), "unknow");
+                    mSharedViewModel.updateUserRestaurantID(mWorkmate.getId(), "unknow");
                     restaurantProfil.getWorkmatesEatingHere().remove(mWorkmate);
                     getAllWorkmatesWhoEatHere();
                     WorkManager.getInstance(requireContext()).cancelAllWorkByTag("Notif");
                 } else {
                     choice = true;
                     fab.setImageResource(R.drawable.ic_checkbox_selected);
-                    UserHelper.updateUserRestaurant(mWorkmate.getId(), restaurantProfil.getName());
-                    UserHelper.updateUserRestaurantAddress(mWorkmate.getId(), restaurantProfil.getAddress());
-                    UserHelper.updateUserRestaurantID(mWorkmate.getId(), restaurantProfil.getId());
+                    mSharedViewModel.updateUserRestaurant(mWorkmate.getId(), restaurantProfil.getName());
+                    mSharedViewModel.updateUserRestaurantAddress(mWorkmate.getId(), restaurantProfil.getAddress());
+                    mSharedViewModel.updateUserRestaurantID(mWorkmate.getId(), restaurantProfil.getId());
                     Date now = new Date();
                     SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
                     String result = formatter.format(now);
-                    UserHelper.updateUserRestaurantDateChoice(mWorkmate.getId(), result);
+                    mSharedViewModel.updateUserRestaurantDateChoice(mWorkmate.getId(), result);
                     restaurantProfil.getWorkmatesEatingHere().add(mWorkmate);
                     getAllWorkmatesWhoEatHere();
                     createNotif();
                 }
+                mSharedViewModel.getWorkmates();
             }
         });
 
@@ -233,7 +233,7 @@ public class RestaurantDetailsFragment extends Fragment {
             @Override
             public void onChanged(final ArrayList<Workmate> workmates) {
                 for (Workmate workmate : workmates) {
-                    if (workmate.getId().equals(Objects.requireNonNull(getCurrentUser()).getUid())) {
+                    if (workmate.getId().equals(mSharedViewModel.getCurrentUser().getUid())) {
                         mWorkmate = workmate;
 
                         if (workmate.getRestaurant().equals(restaurantProfil.getName())) {
@@ -249,8 +249,8 @@ public class RestaurantDetailsFragment extends Fragment {
         });
     }
 
-    public OneTimeWorkRequest createNotif() {
-        return new OneTimeWorkRequest.Builder(NotificationsWorker.class)
+    public void createNotif() {
+        new OneTimeWorkRequest.Builder(NotificationsWorker.class)
                 .setInitialDelay(getMilliseconds(), TimeUnit.MILLISECONDS)
                 .addTag("Notif")
                 .build();
@@ -283,10 +283,10 @@ public class RestaurantDetailsFragment extends Fragment {
             public void onChanged(final ArrayList<Like> likes) {
                 for (Like like : likes) {
                     if (like.getId().equals(likeId)) {
-                        UserHelper.updateUserLikeRestaurant(likeId, intCase);
+                        mSharedViewModel.updateUserLikeRestaurant(likeId, intCase);
                     } else {
-                        UserHelper.createLike(likeId, mWorkmate.getId(), restaurantProfil.getId());
-                        UserHelper.updateUserLikeRestaurant(likeId, intCase);
+                        mSharedViewModel.createLike(likeId, mWorkmate.getId(), restaurantProfil.getId());
+                        mSharedViewModel.updateUserLikeRestaurant(likeId, intCase);
                     }
                 }
             }
@@ -300,16 +300,6 @@ public class RestaurantDetailsFragment extends Fragment {
                 .load(restaurantProfil.getUrlAvatar())
                 .apply(RequestOptions.centerCropTransform())
                 .into(avatarRestaurant);
-    }
-
-    public FetchPlaceRequest getFetchPlaceRequest(String id) {
-        List<Place.Field> detailsArraylistField = new ArrayList<>();
-        detailsArraylistField.add(Place.Field.ID);
-        detailsArraylistField.add(Place.Field.OPENING_HOURS);
-        detailsArraylistField.add(Place.Field.PHONE_NUMBER);
-        detailsArraylistField.add(Place.Field.WEBSITE_URI);
-        return FetchPlaceRequest.builder(id, detailsArraylistField)
-                .build();
     }
 
     private void displayWorkmates(List<Workmate> workmates) {
@@ -332,31 +322,8 @@ public class RestaurantDetailsFragment extends Fragment {
         return workmates;
     }
 
-    public List<Like> findLikes(Task<QuerySnapshot> task) {
-        List<Like> likes = new ArrayList<>();
-        for (DocumentSnapshot document : task.getResult()) {
-            Like like = document.toObject(Like.class);
-            assert like != null;
-            if (like.getRestaurantId().equals(restaurantProfil.getId())) {
-                likes.add(like);
-            }
-        }
-        return likes;
-    }
-
-    public void getAllLikes() {
-        UserHelper.getLikesCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    findLikes(task);
-                }
-            }
-        });
-    }
-
     public void getAllWorkmatesWhoEatHere() {
-        UserHelper.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        UserManager.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -364,10 +331,5 @@ public class RestaurantDetailsFragment extends Fragment {
                 }
             }
         });
-    }
-
-    @Nullable
-    protected FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
     }
 }

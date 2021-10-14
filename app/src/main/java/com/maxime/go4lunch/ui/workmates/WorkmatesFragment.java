@@ -18,7 +18,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.api.UserHelper;
+import com.maxime.go4lunch.api.UserManager;
 import com.maxime.go4lunch.model.Workmate;
 
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ public class WorkmatesFragment extends Fragment {
     }
 
     private void getAllDocs() {
-        UserHelper.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        UserManager.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
