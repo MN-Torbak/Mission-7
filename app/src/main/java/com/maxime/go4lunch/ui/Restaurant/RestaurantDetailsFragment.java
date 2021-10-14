@@ -27,11 +27,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.maxime.go4lunch.Notifications.NotificationsWorker;
@@ -95,7 +91,7 @@ public class RestaurantDetailsFragment extends Fragment {
         if (requireActivity().findViewById(R.id.button_tri) != null && requireActivity().findViewById(R.id.button_tri).getVisibility() == View.VISIBLE) {
             requireActivity().findViewById(R.id.button_tri).setVisibility(View.GONE);
         }
-        mSharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        mSharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         mSharedViewModel.getWorkmates();
         mSharedViewModel.getAllLikes();
         mSharedViewModel.getRestaurant(requireActivity());

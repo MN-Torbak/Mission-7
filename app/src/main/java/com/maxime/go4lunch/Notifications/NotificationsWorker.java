@@ -33,12 +33,13 @@ import java.util.Objects;
 public class NotificationsWorker extends Worker {
 
     private SharedPreferences mPreferences;
-    SharedViewModel mSharedViewModel;
+    UserManager mUserManager;
 
     public NotificationsWorker(
             @NonNull Context context,
             @NonNull WorkerParameters params) {
         super(context, params);
+        mUserManager = new UserManager();
     }
 
     @NonNull

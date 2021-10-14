@@ -32,6 +32,7 @@ import com.maxime.go4lunch.api.UserManager;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
+import com.maxime.go4lunch.ui.settings.SettingsFragment;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -62,8 +63,8 @@ public class SharedViewModel extends ViewModel {
         return mUserManager.createLike(id, workmateId, restaurantId);
     }
 
-    public com.google.android.gms.tasks.Task<DocumentSnapshot> getUser(String id) {
-        return mUserManager.getUser(id);
+    public void getUser(String id, SettingsFragment.OnUserSuccessListener listener) {
+        mUserManager.getUser(id, listener);
     }
 
     public FirebaseUser getCurrentUser() {

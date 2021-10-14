@@ -116,15 +116,6 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    public void notifications() {
-        WorkRequest uploadWorkRequest =
-                new OneTimeWorkRequest.Builder(NotificationsWorker.class)
-                        .build();
-        WorkManager
-                .getInstance(this)
-                .enqueue(uploadWorkRequest);
-    }
-
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = getString(R.string.close);

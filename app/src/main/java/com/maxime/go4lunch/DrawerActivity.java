@@ -13,6 +13,7 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.material.navigation.NavigationView;
+import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
 import com.maxime.go4lunch.ui.settings.SettingsFragment;
 import com.maxime.go4lunch.ui.yourlunch.YourLunchFragment;
@@ -63,7 +64,7 @@ public class DrawerActivity extends AppCompatActivity {
         TextView navUsername = (TextView) headerView.findViewById(R.id.drawer_name);
         TextView navUserMail = (TextView) headerView.findViewById(R.id.drawer_mail);
         ImageView navAvatar = (ImageView) headerView.findViewById(R.id.drawer_avatar);
-        getWorkmate(navAvatar, navUsername, navUserMail);
+        observeWorkmates(navAvatar, navUsername, navUserMail);
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_your_lunch, R.id.nav_settings)
                 .setDrawerLayout(drawer)
@@ -75,7 +76,6 @@ public class DrawerActivity extends AppCompatActivity {
         navigationView.getMenu().findItem(R.id.nav_your_lunch).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                mSharedViewModel.getWorkmates();
                 navigate(mWorkmate);
                 return true;
             }
@@ -141,7 +141,7 @@ public class DrawerActivity extends AppCompatActivity {
         };
     }
 
-    private void getWorkmate(ImageView avatar, TextView name, TextView mail) {
+    private void observeWorkmates(ImageView avatar, TextView name, TextView mail) {
         mSharedViewModel.liveWorkmates.observe(this, new Observer<ArrayList<Workmate>>() {
             @Override
             public void onChanged(final ArrayList<Workmate> workmates) {
@@ -161,6 +161,7 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private void navigate(Workmate workmate) {
+        Restaurant restaurant = mSharedViewModel.liveMyRestaurant.getValue();
         if (!workmate.getRestaurant().equals("aucun")) {
             Bundle b = new Bundle();
             b.putString("restaurant", workmate.getRestaurantID());

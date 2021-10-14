@@ -71,7 +71,7 @@ public class SettingsFragment extends Fragment {
         signOut = view.findViewById(R.id.button_sign_out);
         delete = view.findViewById(R.id.button_delete);
         mPreferences = requireContext().getSharedPreferences(NOTIFICATION, MODE_PRIVATE);
-        mSharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        mSharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         this.updateUIWhenCreating();
 
         updateName.setOnClickListener(new View.OnClickListener() {
@@ -123,10 +123,9 @@ public class SettingsFragment extends Fragment {
                         .into(avatar);
             }
 
-            mSharedViewModel.getUser(this.mSharedViewModel.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            mSharedViewModel.getUser(this.mSharedViewModel.getCurrentUser().getUid(), new OnUserSuccessListener() {
                 @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    Workmate currentWorkmate = documentSnapshot.toObject(Workmate.class);
+                public void onUserSuccess(Workmate currentWorkmate) {
                     assert currentWorkmate != null;
                     String username = TextUtils.isEmpty(currentWorkmate.getName()) ? getString(R.string.info_no_username_found) : currentWorkmate.getName();
                     name.setText(username);
@@ -140,12 +139,17 @@ public class SettingsFragment extends Fragment {
                     }
                 }
             });
+
             if (mPreferences.getBoolean("notification_boolean", true)) {
                 notifications.setBackground(getResources().getDrawable(R.drawable.notification_check));
             } else if (mPreferences.getBoolean("notification_boolean", false)) {
                 notifications.setBackground(getResources().getDrawable(R.drawable.notification_cross));
             }
         }
+    }
+
+    public interface OnUserSuccessListener {
+        void onUserSuccess(Workmate workmate);
     }
 
     public void onClickUpdateButton() {

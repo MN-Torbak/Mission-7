@@ -1,15 +1,22 @@
 package com.maxime.go4lunch.api;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Workmate;
+import com.maxime.go4lunch.ui.settings.SettingsFragment;
 
 public class UserRepository {
 
@@ -40,8 +47,15 @@ public class UserRepository {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    public com.google.android.gms.tasks.Task<DocumentSnapshot> getUser(String id) {
-        return this.getUsersCollection().document(id).get();
+    public void getUser(String id, SettingsFragment.OnUserSuccessListener listener) {
+        Task<DocumentSnapshot> task = this.getUsersCollection().document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                Workmate currentWorkmate = documentSnapshot.toObject(Workmate.class);
+                listener.onUserSuccess(currentWorkmate);
+                }
+            }
+        );
     }
 
     public com.google.android.gms.tasks.Task<DocumentSnapshot> getLike(String id) {

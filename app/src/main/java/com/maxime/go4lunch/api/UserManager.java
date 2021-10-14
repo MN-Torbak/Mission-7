@@ -5,6 +5,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.maxime.go4lunch.ui.settings.SettingsFragment;
 
 public class UserManager {
 
@@ -38,8 +39,8 @@ public class UserManager {
 
     // --- GET ---
 
-    public com.google.android.gms.tasks.Task<DocumentSnapshot> getUser(String id) {
-        return mUserRepository.getUser(id);
+    public void  getUser(String id, SettingsFragment.OnUserSuccessListener listener) {
+        mUserRepository.getUser(id, listener);
     }
 
     public FirebaseUser getCurrentUser() {
