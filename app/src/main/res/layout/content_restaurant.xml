@@ -18,7 +18,8 @@
             android:layout_height="90dp"
             android:background="@color/colorOrange"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:contentDescription="@string/backgroundOrange" />
 
         <TextView
             android:id="@+id/name_restaurant"
@@ -29,7 +30,7 @@
             android:layout_marginBottom="5dp"
             android:background="@color/colorOrange"
             android:textColor="#434343"
-            android:textSize="20dp"
+            android:textSize="20sp"
             app:layout_constraintBottom_toTopOf="@id/address_restaurant"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -52,7 +53,7 @@
             android:layout_marginTop="15dp"
             android:background="@android:color/transparent"
             android:drawableTop="@drawable/phone"
-            android:text="Call"
+            android:text="@string/call"
             android:textColor="#FF9800"
             app:layout_constraintEnd_toStartOf="@id/like"
             app:layout_constraintStart_toStartOf="parent"
@@ -65,7 +66,7 @@
             android:layout_marginTop="15dp"
             android:background="@android:color/transparent"
             android:drawableTop="@drawable/star"
-            android:text="like"
+            android:text="@string/like"
             android:textColor="#FF9800"
             app:layout_constraintEnd_toStartOf="@id/website"
             app:layout_constraintStart_toEndOf="@id/phone_number"
@@ -78,7 +79,7 @@
             android:layout_marginTop="15dp"
             android:background="@android:color/transparent"
             android:drawableTop="@drawable/earth"
-            android:text="website"
+            android:text="@string/website"
             android:textColor="#FF9800"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/like"
@@ -103,7 +104,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/like"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:targetApi="lollipop" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

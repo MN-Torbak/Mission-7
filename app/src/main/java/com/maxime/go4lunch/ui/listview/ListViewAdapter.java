@@ -1,5 +1,6 @@
 package com.maxime.go4lunch.ui.listview;
 
+import android.annotation.SuppressLint;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -90,6 +91,7 @@ public class ListViewAdapter extends RecyclerView.Adapter<ListViewAdapter.ListVi
         notifyDataSetChanged();
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull final ListViewAdapter.ListViewHolder holder, int position) {
         final Restaurant restaurant = mRestaurant.get(position);

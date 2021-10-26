@@ -25,18 +25,14 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.api.UserManager;
+import com.maxime.go4lunch.api.UserRepository;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
-import com.maxime.go4lunch.ui.settings.SettingsFragment;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,24 +51,28 @@ public class SharedViewModel extends ViewModel {
     public MutableLiveData<Location> liveLocation = new MutableLiveData<>();
     public MutableLiveData<Restaurant> liveMyRestaurant = new MutableLiveData<>();
 
+    public void getUsersCollection(UserRepository.WorkmatesListener listener) {
+        mUserManager.getUsersCollection(listener);
+    }
+
+    public void getLikesCollection(UserRepository.LikesListener listener) {
+        mUserManager.getLikesCollection(listener);
+    }
+
     public Task<Void> createUser(String id, String avatar, String name) {
         return mUserManager.createUser(id, avatar, name);
     }
 
-    public Task<Void> createLike(String id, String workmateId, String restaurantId) {
-        return mUserManager.createLike(id, workmateId, restaurantId);
+    public void createLike(String id, String workmateId, String restaurantId) {
+        mUserManager.createLike(id, workmateId, restaurantId);
     }
 
-    public void getUser(String id, SettingsFragment.OnUserSuccessListener listener) {
+    public void getUser(String id, UserRepository.OnUserSuccessListener listener) {
         mUserManager.getUser(id, listener);
     }
 
     public FirebaseUser getCurrentUser() {
         return mUserManager.getCurrentUser();
-    }
-
-    public com.google.android.gms.tasks.Task<DocumentSnapshot> getLike(String id) {
-        return mUserManager.getLike(id);
     }
 
     public Task<Void> updateUserName(String id, String name) {
@@ -158,21 +158,15 @@ public class SharedViewModel extends ViewModel {
     }
 
     public void getWorkmates() {
-        UserManager.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        getUsersCollection(new UserRepository.WorkmatesListener() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    ArrayList<Workmate> workmates = new ArrayList<>();
-                    for (DocumentSnapshot document : task.getResult()) {
-                        Workmate workmate = document.toObject(Workmate.class);
-                        assert workmate != null;
-                        workmates.add(workmate);
-                    }
-                    liveWorkmates.setValue(workmates);
-                    if (liveRestaurant.getValue() != null) {
-                        if (Objects.requireNonNull(liveRestaurant.getValue()).size() > 0) {
-                            mapWorkmatesToRestaurant();
-                        }
+            public void onWorkmatesSuccess(List<Workmate> workmates) {
+                ArrayList<Workmate> workmatesArrayList = new ArrayList<>();
+                workmatesArrayList.addAll(workmates);
+                liveWorkmates.setValue(workmatesArrayList);
+                if (liveRestaurant.getValue() != null) {
+                    if (Objects.requireNonNull(liveRestaurant.getValue()).size() > 0) {
+                        mapWorkmatesToRestaurant();
                     }
                 }
             }
@@ -195,18 +189,10 @@ public class SharedViewModel extends ViewModel {
     }
 
     public void getAllLikes() {
-        UserManager.getLikesCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        getLikesCollection(new UserRepository.LikesListener() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    ArrayList<Like> likes = new ArrayList<>();
-                    for (DocumentSnapshot document : task.getResult()) {
-                        Like like = document.toObject(Like.class);
-                        assert like != null;
-                        likes.add(like);
-                    }
-                    liveLikes.setValue(likes);
-                }
+            public void onLikesSuccess(List<Like> likes) {
+                liveLikes.setValue((ArrayList<Like>) likes);
             }
         });
     }
@@ -214,9 +200,11 @@ public class SharedViewModel extends ViewModel {
     public void getLikesForRestaurant(Restaurant restaurant) {
         getAllLikes();
         ArrayList<Like> likes = liveLikes.getValue();
-        for (Like like : likes) {
-            if (like.getRestaurantId().equals(restaurant.getId())) {
-                restaurant.getLikes().add(like);
+        if (likes != null) {
+            for (Like like : likes) {
+                if (like.getRestaurantId().equals(restaurant.getId())) {
+                    restaurant.getLikes().add(like);
+                }
             }
         }
     }
@@ -268,7 +256,7 @@ public class SharedViewModel extends ViewModel {
         if (place.getOpeningHours() != null) {
             List<Period> openingHoursList = place.getOpeningHours().getPeriods();
             for (Period period : openingHoursList) {
-                if (Objects.requireNonNull(period.getOpen()).getDay().equals(getCurrentDayOfWeek())) {
+                if (Objects.requireNonNull(period.getOpen()).getDay().equals(UserRepository.getCurrentDayOfWeek())) {
                     return getReadableOpeningHours(period, context);
                 }
             }
@@ -290,30 +278,6 @@ public class SharedViewModel extends ViewModel {
             return "0" + period.getClose().getTime().getMinutes();
         } else {
             return "" + period.getClose().getTime().getMinutes();
-        }
-    }
-
-    private com.google.android.libraries.places.api.model.DayOfWeek getCurrentDayOfWeek() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
-        switch (dayOfWeek) {
-            case 0:
-                return com.google.android.libraries.places.api.model.DayOfWeek.MONDAY;
-            case 1:
-                return com.google.android.libraries.places.api.model.DayOfWeek.TUESDAY;
-            case 2:
-                return com.google.android.libraries.places.api.model.DayOfWeek.WEDNESDAY;
-            case 3:
-                return com.google.android.libraries.places.api.model.DayOfWeek.THURSDAY;
-            case 4:
-                return com.google.android.libraries.places.api.model.DayOfWeek.FRIDAY;
-            case 5:
-                return com.google.android.libraries.places.api.model.DayOfWeek.SATURDAY;
-            case 6:
-                return com.google.android.libraries.places.api.model.DayOfWeek.SUNDAY;
-            default:
-                return com.google.android.libraries.places.api.model.DayOfWeek.SUNDAY;
         }
     }
 }

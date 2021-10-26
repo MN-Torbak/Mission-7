@@ -25,7 +25,8 @@
             <ImageView
                 android:id="@+id/avatar_restaurant"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:contentDescription="@string/profile_picture_restaurant" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>

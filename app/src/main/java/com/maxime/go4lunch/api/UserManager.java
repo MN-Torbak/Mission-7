@@ -2,53 +2,46 @@ package com.maxime.go4lunch.api;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.maxime.go4lunch.ui.settings.SettingsFragment;
+import com.maxime.go4lunch.model.Workmate;
+
+import java.util.List;
 
 public class UserManager {
 
-    private static final String COLLECTION_NAME = "users";
-    private static final String COLLECTION_LIKE = "likes";
-
     UserRepository mUserRepository;
+
     public UserManager() {
         mUserRepository = new UserRepository();
     }
 
     // --- COLLECTION REFERENCE ---
 
-    public static CollectionReference getUsersCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+    public void getUsersCollection(UserRepository.WorkmatesListener listener) {
+        mUserRepository.getUsersCollection(listener);
     }
 
-    public static CollectionReference getLikesCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_LIKE);
+    public void getLikesCollection(UserRepository.LikesListener listener) {
+        mUserRepository.getLikesCollection(listener);
     }
 
     // --- CREATE ---
 
     public Task<Void> createUser(String id, String avatar, String name) {
-        return mUserRepository.createUser(id,avatar,name);
+        return mUserRepository.createUser(id, avatar, name);
     }
 
     public Task<Void> createLike(String id, String workmateId, String restaurantId) {
-        return mUserRepository.createLike(id,workmateId,restaurantId);
+        return mUserRepository.createLike(id, workmateId, restaurantId);
     }
 
     // --- GET ---
 
-    public void  getUser(String id, SettingsFragment.OnUserSuccessListener listener) {
+    public void getUser(String id, UserRepository.OnUserSuccessListener listener) {
         mUserRepository.getUser(id, listener);
     }
 
     public FirebaseUser getCurrentUser() {
         return mUserRepository.getCurrentUser();
-    }
-
-    public com.google.android.gms.tasks.Task<DocumentSnapshot> getLike(String id) {
-        return mUserRepository.getLike(id);
     }
 
     // --- UPDATE ---
@@ -79,6 +72,22 @@ public class UserManager {
 
     public void updateUserLikeRestaurant(String id, Integer starNumber) {
         mUserRepository.updateUserLikeRestaurant(id, starNumber);
+    }
+
+    private void orderWorkmates(UserRepository.WorkmatesListener workmatesListener) {
+        mUserRepository.getUsersCollection(new UserRepository.WorkmatesListener() {
+            @Override
+            public void onWorkmatesSuccess(List<Workmate> workmates) {
+                for (Workmate workmate : workmates) {
+                    if (workmate.getRestaurant().equals("aucun")) {
+                        workmates.add(workmates.size(), workmate);
+                    } else {
+                        workmates.add(0, workmate);
+                    }
+                }
+            }
+        });
+
     }
 
     // --- DELETE ---

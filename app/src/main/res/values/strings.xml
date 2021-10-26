@@ -59,6 +59,27 @@
     <string name="choice">You chose: </string>
     <string name="join">You will be joined by: </string>
 
+    <string name="profile_picture_restaurant">Profile Picture Restaurant </string>
+    <string name="backgroundOrange">BackgroundOrange </string>
+    <string name="call">Call </string>
+    <string name="like">Like </string>
+    <string name="website">Website </string>
+    <string name="notifications">Notifications </string>
+    <string name="background_settings">Background settings </string>
+    <string name="avatar_settings">Avatar settings </string>
+    <string name="autocomplete_background" translatable="false">Autocomplete Background </string>
+    <string name="avatar_workmate" translatable="false">Avatar Workmate </string>
+    <string name="avatar_listview" translatable="false">Avatar Listview </string>
+    <string name="logo_workmate" translatable="false">Logo Workmate </string>
+    <string name="one_star_full" translatable="false">First Star Full </string>
+    <string name="one_star_empty" translatable="false">First Star Empty </string>
+    <string name="two_star_full" translatable="false">Second Star Full </string>
+    <string name="two_star_empty" translatable="false">Second Star Empty </string>
+    <string name="three_star_full" translatable="false">Third Star Full </string>
+    <string name="three_star_empty" translatable="false">Third Star Empty </string>
+
+
+
     <string-array name="tri_spinner">
         <item>Trier par</item>
         <item>Trier par distance</item>

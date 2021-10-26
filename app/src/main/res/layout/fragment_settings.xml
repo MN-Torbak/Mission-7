@@ -14,7 +14,8 @@
         android:background="@color/colorBackgroundBlack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/background_settings" />
 
     <ImageView
         android:id="@+id/avatar"
@@ -23,7 +24,8 @@
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/avatar_settings" />
 
     <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view_name"
@@ -46,11 +48,14 @@
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginRight="165dp"
+                android:layout_marginEnd="165dp"
                 android:textSize="@dimen/default_text_size"
+                android:inputType="text"
+                android:autofillHints=""
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/button_update"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                tools:ignore="LabelFor" />
 
             <Button
                 android:id="@+id/button_update"
@@ -94,9 +99,12 @@
                 android:ellipsize="middle"
                 android:singleLine="true"
                 android:textSize="@dimen/default_text_size"
+                android:inputType="text"
+                android:autofillHints=""
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/button_update_avatar"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                tools:ignore="LabelFor"/>
 
             <Button
                 android:id="@+id/button_update_avatar"
@@ -137,13 +145,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginRight="55dp"
-                android:text="Notifications"
+                android:text="@string/notifications"
                 android:gravity="left|center_vertical"
-                android:paddingLeft="10dip"
+                android:paddingStart="10dip"
                 android:textSize="@dimen/default_text_size"
+                android:textColor="@color/quantum_black_100"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/button_notification"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                tools:ignore="RtlHardcoded,RtlSymmetry" />
 
             <Button
                 android:id="@+id/button_notification"

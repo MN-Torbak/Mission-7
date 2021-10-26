@@ -256,7 +256,8 @@ public class Restaurant implements Parcelable {
     public static int getRange(Location myLocation, Restaurant restaurant) {
         float[] results = new float[1];
         android.location.Location.distanceBetween(myLocation.getLatitude(), myLocation.getLongitude(), restaurant.getLatlng().latitude, restaurant.getLatlng().longitude, results);
-        int distanceInMeters = (int) results[0];
+        int distanceInMeters;
+        distanceInMeters = (int) results[0];
         return distanceInMeters;
     }
 

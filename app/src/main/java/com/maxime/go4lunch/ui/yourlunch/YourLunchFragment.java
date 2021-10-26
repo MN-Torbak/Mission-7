@@ -64,9 +64,7 @@ public class YourLunchFragment extends Fragment {
             }
 
             @Override
-            public void onError(@NonNull Status status) {
-                // TODO: Handle the error.
-            }
+            public void onError(@NonNull Status status) { }
         });
 
         Button buttonTri = root.findViewById(R.id.button_tri);

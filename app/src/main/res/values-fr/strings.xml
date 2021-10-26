@@ -45,4 +45,12 @@
     <string name="unknown_schedule">Horaire inconnue</string>
     <string name="choice">Vous avez choisi:</string>
     <string name="join">Vous serez rejoint par:</string>
+    <string name="backgroundOrange">Arrière-plan Orange</string>
+    <string name="call">Appel</string>
+    <string name="like">Aime</string>
+    <string name="website">Site Internet</string>
+    <string name="profile_picture_restaurant">Photo de Profil du Restaurant</string>
+    <string name="notifications">Notifications</string>
+    <string name="background_settings">Arrière-plan paramètres</string>
+    <string name="avatar_settings">Avatar paramètres</string>
 </resources>

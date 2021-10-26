@@ -1,11 +1,11 @@
 package com.maxime.go4lunch.api;
 
-import android.text.TextUtils;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -13,10 +13,14 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.maxime.go4lunch.R;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Workmate;
-import com.maxime.go4lunch.ui.settings.SettingsFragment;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class UserRepository {
 
@@ -24,11 +28,66 @@ public class UserRepository {
     private static final String COLLECTION_NAME = "users";
     private static final String COLLECTION_LIKE = "likes";
 
-    public CollectionReference getUsersCollection() {
+
+    private CollectionReference getUsersCollection() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
-    public CollectionReference getLikesCollection() {
+    public void getUsersCollection(WorkmatesListener listener) {
+        CollectionReference collectionReference = FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    listener.onWorkmatesSuccess(convertWorkmates(task));
+                } else {
+                    Log.d("WorkmatesListener", "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    private List<Workmate> convertWorkmates(Task<QuerySnapshot> task) {
+        List<Workmate> workmates = new ArrayList<>();
+        for (DocumentSnapshot document : task.getResult()) {
+            Workmate workmate = document.toObject(Workmate.class);
+            if (workmate != null) {
+                if (workmate.getRestaurant().equals("aucun")) {
+                    workmates.add(workmates.size(), workmate);
+                } else {
+                    workmates.add(0, workmate);
+                }
+            }
+        }
+
+        return workmates;
+    }
+
+    public void getLikesCollection(LikesListener listener) {
+        CollectionReference collectionReference = FirebaseFirestore.getInstance().collection(COLLECTION_LIKE);
+        collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    listener.onLikesSuccess(getLikes(task));
+                } else {
+                    Log.d("LikesListener", "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    private List<Like> getLikes(Task<QuerySnapshot> task) {
+        List<Like> likes = new ArrayList<>();
+        for (DocumentSnapshot document : task.getResult()) {
+            Like like = document.toObject(Like.class);
+            assert like != null;
+            likes.add(like);
+        }
+        return likes;
+    }
+
+    private CollectionReference getLikesCollection() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_LIKE);
     }
 
@@ -47,7 +106,7 @@ public class UserRepository {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
-    public void getUser(String id, SettingsFragment.OnUserSuccessListener listener) {
+    public void getUser(String id, OnUserSuccessListener listener) {
         Task<DocumentSnapshot> task = this.getUsersCollection().document(id).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -58,8 +117,16 @@ public class UserRepository {
         );
     }
 
-    public com.google.android.gms.tasks.Task<DocumentSnapshot> getLike(String id) {
-        return this.getLikesCollection().document(id).get();
+    public interface OnUserSuccessListener {
+        void onUserSuccess(Workmate workmate);
+    }
+
+    public interface WorkmatesListener {
+        void onWorkmatesSuccess(List<Workmate> workmates);
+    }
+
+    public interface LikesListener {
+        void onLikesSuccess(List<Like> likes);
     }
 
     public Task<Void> updateUserName(String id, String name) {
@@ -92,6 +159,30 @@ public class UserRepository {
 
     public void deleteUser(String id) {
         this.getUsersCollection().document(id).delete();
+    }
+
+    public static com.google.android.libraries.places.api.model.DayOfWeek getCurrentDayOfWeek() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(new Date());
+        int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        switch (dayOfWeek) {
+            case 0:
+                return com.google.android.libraries.places.api.model.DayOfWeek.MONDAY;
+            case 1:
+                return com.google.android.libraries.places.api.model.DayOfWeek.TUESDAY;
+            case 2:
+                return com.google.android.libraries.places.api.model.DayOfWeek.WEDNESDAY;
+            case 3:
+                return com.google.android.libraries.places.api.model.DayOfWeek.THURSDAY;
+            case 4:
+                return com.google.android.libraries.places.api.model.DayOfWeek.FRIDAY;
+            case 5:
+                return com.google.android.libraries.places.api.model.DayOfWeek.SATURDAY;
+            case 6:
+                return com.google.android.libraries.places.api.model.DayOfWeek.SUNDAY;
+            default:
+                return com.google.android.libraries.places.api.model.DayOfWeek.SUNDAY;
+        }
     }
 
 }

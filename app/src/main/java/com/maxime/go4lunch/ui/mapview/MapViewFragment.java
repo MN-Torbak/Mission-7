@@ -36,6 +36,7 @@ import com.maxime.go4lunch.viewmodel.SharedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -46,21 +47,21 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private LocationListener locationListener;
     private LocationManager locationManager;
 
-    public MapViewFragment() {
-    }
+    public MapViewFragment() { }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
         locationManager = (LocationManager)
-                getActivity().getSystemService(Context.LOCATION_SERVICE);
+                requireActivity().getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
-            public void onLocationChanged(Location location) {
+            public void onLocationChanged(@NonNull Location location) {
                 if (mMap == null) {
                     return;
                 }
@@ -69,19 +70,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             }
 
             @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
+            public void onStatusChanged(String provider, int status, Bundle extras) { }
 
             @Override
-            public void onProviderEnabled(String provider) {
-
-            }
+            public void onProviderEnabled(@NonNull String provider) { }
 
             @Override
-            public void onProviderDisabled(String provider) {
-
-            }
+            public void onProviderDisabled(@NonNull String provider) { }
         };
         try {
             locationManager.requestLocationUpdates(
@@ -89,10 +84,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         } catch (SecurityException e) {
             Log.d("logmap", "requestlocationupdateerror");
         }
-        getActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.VISIBLE);
-        getActivity().findViewById(R.id.autocomplete_background).setVisibility(View.VISIBLE);
-        getActivity().findViewById(R.id.tri_spinner).setVisibility(View.GONE);
-        getActivity().findViewById(R.id.button_tri).setVisibility(View.GONE);
+        requireActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.VISIBLE);
+        requireActivity().findViewById(R.id.autocomplete_background).setVisibility(View.VISIBLE);
+        requireActivity().findViewById(R.id.tri_spinner).setVisibility(View.GONE);
+        requireActivity().findViewById(R.id.button_tri).setVisibility(View.GONE);
         return view;
     }
 
@@ -119,7 +114,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         enableMyLocation();
         mMap.getUiSettings().setZoomControlsEnabled(true);
-        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(), R.raw.map_style));
+        mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style));
         try {
             locationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, 1000, 10, locationListener);
@@ -150,7 +145,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                         @Override
                         public boolean onMarkerClick(Marker m) {
                             Bundle b = new Bundle();
-                            b.putString("restaurant", getRestaurantFromMarker(m, restaurants).getId());
+                            b.putString("restaurant", Objects.requireNonNull(getRestaurantFromMarker(m, restaurants)).getId());
                             NavHostFragment.findNavController(MapViewFragment.this).navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment, b);
                             return false;
                         }
@@ -163,10 +158,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
 
     private void enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(getContext(), ACCESS_FINE_LOCATION)
+        if (ContextCompat.checkSelfPermission(requireContext(), ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) { mMap.setMyLocationEnabled(true);
         } else {
-            ActivityCompat.requestPermissions(getActivity(),
+            ActivityCompat.requestPermissions(requireActivity(),
                     new String[]{ACCESS_FINE_LOCATION},
                     PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
         }
@@ -176,17 +171,15 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void onRequestPermissionsResult(int requestCode,
                                            @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //TODO: location ici
-                    try {
-                        mMap.setMyLocationEnabled(true);
-                        mMap.getUiSettings().setMyLocationButtonEnabled(true);
-                    } catch (SecurityException e) {
-                        Log.e("Exception: %s", e.getMessage());
-                    }
+        if (requestCode == PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION) {
+            if (grantResults.length > 0
+                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //TODO: location ici
+                try {
+                    mMap.setMyLocationEnabled(true);
+                    mMap.getUiSettings().setMyLocationButtonEnabled(true);
+                } catch (SecurityException e) {
+                    Log.e("Exception: %s", Objects.requireNonNull(e.getMessage()));
                 }
             }
         }

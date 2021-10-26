@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,16 +25,11 @@ import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.maxime.go4lunch.MainActivity;
+import com.maxime.go4lunch.api.UserRepository;
 import com.maxime.go4lunch.model.Workmate;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.api.UserManager;
 import com.maxime.go4lunch.viewmodel.SharedViewModel;
-
-import java.util.Objects;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -123,7 +117,7 @@ public class SettingsFragment extends Fragment {
                         .into(avatar);
             }
 
-            mSharedViewModel.getUser(this.mSharedViewModel.getCurrentUser().getUid(), new OnUserSuccessListener() {
+            mSharedViewModel.getUser(this.mSharedViewModel.getCurrentUser().getUid(), new UserRepository.OnUserSuccessListener() {
                 @Override
                 public void onUserSuccess(Workmate currentWorkmate) {
                     assert currentWorkmate != null;
@@ -148,9 +142,6 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    public interface OnUserSuccessListener {
-        void onUserSuccess(Workmate workmate);
-    }
 
     public void onClickUpdateButton() {
         this.updateUsernameInFirebase();

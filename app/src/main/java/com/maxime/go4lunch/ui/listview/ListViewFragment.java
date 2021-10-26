@@ -24,6 +24,7 @@ import com.maxime.go4lunch.viewmodel.SharedViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static android.widget.LinearLayout.VERTICAL;
 
@@ -68,11 +69,11 @@ public class ListViewFragment extends Fragment {
                 mLocation = location;
             }
         });
-        getActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.VISIBLE);
-        getActivity().findViewById(R.id.autocomplete_background).setVisibility(View.VISIBLE);
-        mTriSpinner = getActivity().findViewById(R.id.tri_spinner);
-        getActivity().findViewById(R.id.tri_spinner).setVisibility(View.INVISIBLE);
-        getActivity().findViewById(R.id.button_tri).setVisibility(View.VISIBLE);
+        requireActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.VISIBLE);
+        requireActivity().findViewById(R.id.autocomplete_background).setVisibility(View.VISIBLE);
+        mTriSpinner = requireActivity().findViewById(R.id.tri_spinner);
+        requireActivity().findViewById(R.id.tri_spinner).setVisibility(View.INVISIBLE);
+        requireActivity().findViewById(R.id.button_tri).setVisibility(View.VISIBLE);
 
         mTriSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

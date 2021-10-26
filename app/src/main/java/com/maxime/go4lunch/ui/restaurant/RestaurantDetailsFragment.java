@@ -1,4 +1,4 @@
-package com.maxime.go4lunch.ui.Restaurant;
+package com.maxime.go4lunch.ui.restaurant;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -25,14 +25,10 @@ import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.maxime.go4lunch.Notifications.NotificationsWorker;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.api.UserManager;
+import com.maxime.go4lunch.api.UserRepository;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
@@ -253,7 +249,6 @@ public class RestaurantDetailsFragment extends Fragment {
     }
 
     private long getMilliseconds() {
-        //TODO: calculer les millisecondes entre maintenant et le prochain midi
         Date date = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -267,7 +262,6 @@ public class RestaurantDetailsFragment extends Fragment {
         if (difference > 0) {
             return difference;
         } else {
-            //TODO: notification à déclencher lendemain midi
             return difference + (24 * 60 * 60 * 1000);
         }
     }
@@ -306,25 +300,17 @@ public class RestaurantDetailsFragment extends Fragment {
         mRecyclerView.setAdapter(restaurantFragmentAdapter);
     }
 
-    private List<Workmate> findWorkmates(Task<QuerySnapshot> task) {
-        List<Workmate> workmates = new ArrayList<>();
-        for (DocumentSnapshot document : task.getResult()) {
-            Workmate workmate = document.toObject(Workmate.class);
-            assert workmate != null;
-            if (workmate.getRestaurant().equals(restaurantProfil.getName())) {
-                workmates.add(workmate);
-            }
-        }
-        return workmates;
-    }
-
     public void getAllWorkmatesWhoEatHere() {
-        UserManager.getUsersCollection().get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        mSharedViewModel.getUsersCollection(new UserRepository.WorkmatesListener() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    displayWorkmates(findWorkmates(task));
+            public void onWorkmatesSuccess(List<Workmate> workmates) {
+                List<Workmate> workmateWhoEatHere = new ArrayList<>();
+                for (Workmate workmate : workmates) {
+                    if (workmate.getRestaurant().equals(restaurantProfil.getName())) {
+                        workmateWhoEatHere.add(workmate);
+                    }
                 }
+                displayWorkmates(workmateWhoEatHere);
             }
         });
     }

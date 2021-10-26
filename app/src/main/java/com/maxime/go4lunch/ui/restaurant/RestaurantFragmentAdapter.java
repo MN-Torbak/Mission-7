@@ -1,4 +1,4 @@
-package com.maxime.go4lunch.ui.Restaurant;
+package com.maxime.go4lunch.ui.restaurant;
 
 import android.view.LayoutInflater;
 import android.view.View;
