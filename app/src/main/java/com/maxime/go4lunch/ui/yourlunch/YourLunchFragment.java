@@ -88,8 +88,10 @@ public class YourLunchFragment extends Fragment {
     private void observeWorkmate() {
         Bundle b = this.getArguments();
         if (b != null && b.getString("restaurant") != null) {
-            mNavController.navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment, b);
-            ((DrawerActivity) requireActivity()).closeDrawer();
+            if (mNavController.getCurrentDestination() != null && mNavController.getCurrentDestination().getId() != R.id.restaurantDetailsFragment) {
+                mNavController.navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment, b);
+                ((DrawerActivity) requireActivity()).closeDrawer();
+            }
         }
     }
 

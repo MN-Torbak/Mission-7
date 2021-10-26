@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -121,32 +120,29 @@ public class SharedViewModel extends ViewModel {
 
         if (ContextCompat.checkSelfPermission(context, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             Task<FindCurrentPlaceResponse> placeResponse = placesClient.findCurrentPlace(request);
-            placeResponse.addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if (task.isSuccessful()) {
-                        FindCurrentPlaceResponse response = (FindCurrentPlaceResponse) task.getResult();
-                        ArrayList<Restaurant> restaurants = new ArrayList<>();
-                        for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
-                            if (Objects.requireNonNull(placeLikelihood.getPlace().getTypes()).contains(Place.Type.RESTAURANT)) {
-                                Restaurant restaurant = new Restaurant(placeLikelihood);
-                                getPlaceOpeningHours(placesClient, placeLikelihood.getPlace(), restaurant, context);
-                                restaurants.add(restaurant);
-                            }
+            placeResponse.addOnCompleteListener((OnCompleteListener<FindCurrentPlaceResponse>) task -> {
+                if (task.isSuccessful()) {
+                    FindCurrentPlaceResponse response = (FindCurrentPlaceResponse) task.getResult();
+                    ArrayList<Restaurant> restaurants = new ArrayList<>();
+                    for (PlaceLikelihood placeLikelihood : response.getPlaceLikelihoods()) {
+                        if (Objects.requireNonNull(placeLikelihood.getPlace().getTypes()).contains(Place.Type.RESTAURANT)) {
+                            Restaurant restaurant = new Restaurant(placeLikelihood);
+                            getPlaceOpeningHours(placesClient, placeLikelihood.getPlace(), restaurant, context);
+                            restaurants.add(restaurant);
                         }
-                        liveRestaurant.setValue(restaurants);
-                        if (liveWorkmates.getValue() != null) {
-                            if (Objects.requireNonNull(liveWorkmates.getValue()).size() > 0) {
-                                mapWorkmatesToRestaurant();
-                            }
+                    }
+                    liveRestaurant.setValue(restaurants);
+                    if (liveWorkmates.getValue() != null) {
+                        if (Objects.requireNonNull(liveWorkmates.getValue()).size() > 0) {
+                            mapWorkmatesToRestaurant();
                         }
-                        Log.d("gg", "onComplete: ");
-                    } else {
-                        Exception exception = task.getException();
-                        if (exception instanceof ApiException) {
-                            ApiException apiException = (ApiException) exception;
-                            Log.e("bg", "Place not found: " + apiException.getStatusCode());
-                        }
+                    }
+                    Log.d("gg", "onComplete: ");
+                } else {
+                    Exception exception = task.getException();
+                    if (exception instanceof ApiException) {
+                        ApiException apiException = (ApiException) exception;
+                        Log.e("bg", "Place not found: " + apiException.getStatusCode());
                     }
                 }
             });
@@ -161,8 +157,7 @@ public class SharedViewModel extends ViewModel {
         getUsersCollection(new UserRepository.WorkmatesListener() {
             @Override
             public void onWorkmatesSuccess(List<Workmate> workmates) {
-                ArrayList<Workmate> workmatesArrayList = new ArrayList<>();
-                workmatesArrayList.addAll(workmates);
+                ArrayList<Workmate> workmatesArrayList = new ArrayList<>(workmates);
                 liveWorkmates.setValue(workmatesArrayList);
                 if (liveRestaurant.getValue() != null) {
                     if (Objects.requireNonNull(liveRestaurant.getValue()).size() > 0) {

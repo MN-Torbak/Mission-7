@@ -36,8 +36,8 @@ public class WorkmatesFragment extends Fragment {
         getAllDocs();
         DividerItemDecoration itemDecor = new DividerItemDecoration(requireContext(), VERTICAL);
         mRecyclerView.addItemDecoration(itemDecor);
-        requireActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.VISIBLE);
-        requireActivity().findViewById(R.id.autocomplete_background).setVisibility(View.VISIBLE);
+        requireActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.GONE);
+        requireActivity().findViewById(R.id.autocomplete_background).setVisibility(View.GONE);
         requireActivity().findViewById(R.id.tri_spinner).setVisibility(View.GONE);
         requireActivity().findViewById(R.id.button_tri).setVisibility(View.GONE);
         return root;

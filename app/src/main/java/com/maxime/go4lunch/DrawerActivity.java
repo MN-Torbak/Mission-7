@@ -36,7 +36,6 @@ import java.util.ArrayList;
 
 public class DrawerActivity extends AppCompatActivity {
 
-    private static final int SIGN_OUT_TASK = 10;
     private AppBarConfiguration mAppBarConfiguration;
     SharedViewModel mSharedViewModel;
     public TextView Name;
@@ -117,7 +116,7 @@ public class DrawerActivity extends AppCompatActivity {
 
     private void signOutUserFromFirebase() {
         AuthUI.getInstance()
-                .signOut(this).addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK));
+                .signOut(this).addOnSuccessListener(this, this.updateUIAfterRESTRequestsCompleted());
     }
 
     private void startMainActivity() {
@@ -125,18 +124,12 @@ public class DrawerActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
+    private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted() {
         return new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                switch (origin) {
-                    case SIGN_OUT_TASK:
-                        finish();
-                        startMainActivity();
-                        break;
-                    default:
-                        break;
-                }
+                finish();
+                startMainActivity();
             }
         };
     }

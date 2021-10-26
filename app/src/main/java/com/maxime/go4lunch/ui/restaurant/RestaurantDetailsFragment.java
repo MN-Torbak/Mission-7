@@ -221,24 +221,27 @@ public class RestaurantDetailsFragment extends Fragment {
 
 
     private void observeWorkmate() {
-        mSharedViewModel.liveWorkmates.observe(requireActivity(), new Observer<ArrayList<Workmate>>() {
-            @Override
-            public void onChanged(final ArrayList<Workmate> workmates) {
-                for (Workmate workmate : workmates) {
-                    if (workmate.getId().equals(mSharedViewModel.getCurrentUser().getUid())) {
-                        mWorkmate = workmate;
+        if (getActivity() != null) {
 
-                        if (workmate.getRestaurant().equals(restaurantProfil.getName())) {
-                            choice = true;
-                            fab.setImageResource(R.drawable.ic_checkbox_selected);
-                        } else {
-                            choice = false;
-                            fab.setImageResource(R.drawable.ic_checkbox_not_selected);
+            mSharedViewModel.liveWorkmates.observe(requireActivity(), new Observer<ArrayList<Workmate>>() {
+                @Override
+                public void onChanged(final ArrayList<Workmate> workmates) {
+                    for (Workmate workmate : workmates) {
+                        if (workmate.getId().equals(mSharedViewModel.getCurrentUser().getUid())) {
+                            mWorkmate = workmate;
+
+                            if (workmate.getRestaurant().equals(restaurantProfil.getName())) {
+                                choice = true;
+                                fab.setImageResource(R.drawable.ic_checkbox_selected);
+                            } else {
+                                choice = false;
+                                fab.setImageResource(R.drawable.ic_checkbox_not_selected);
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
     }
 
     public void createNotif() {
@@ -293,11 +296,13 @@ public class RestaurantDetailsFragment extends Fragment {
     }
 
     private void displayWorkmates(List<Workmate> workmates) {
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, false);
-        mRecyclerView.setLayoutManager(layoutManager);
-        RestaurantFragmentAdapter restaurantFragmentAdapter = new RestaurantFragmentAdapter(workmates);
-        restaurantFragmentAdapter.notifyDataSetChanged();
-        mRecyclerView.setAdapter(restaurantFragmentAdapter);
+        if (getActivity() != null) {
+            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(requireActivity(), RecyclerView.VERTICAL, false);
+            mRecyclerView.setLayoutManager(layoutManager);
+            RestaurantFragmentAdapter restaurantFragmentAdapter = new RestaurantFragmentAdapter(workmates);
+            restaurantFragmentAdapter.notifyDataSetChanged();
+            mRecyclerView.setAdapter(restaurantFragmentAdapter);
+        }
     }
 
     public void getAllWorkmatesWhoEatHere() {
