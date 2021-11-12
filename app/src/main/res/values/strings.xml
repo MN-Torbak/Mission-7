@@ -16,6 +16,8 @@
     <string name="joining">%s eats here!</string>
     <string name="open">Open %sH%s</string>
     <string name="close">Close %sH%s</string>
+    <string name="choice">You chose: </string>
+    <string name="join">You will be joined by: </string>
     <string name="unknown_schedule">Unknown schedule</string>
 
     <string name="facebook_application_id" translatable="false">187118033500985</string>
@@ -56,9 +58,6 @@
     <string name="generic_idp_recoverable_error">Generic IDP recoverable error.</string>
     <string name="unknown_code">Unknown code: </string>
 
-    <string name="choice">You chose: </string>
-    <string name="join">You will be joined by: </string>
-
     <string name="profile_picture_restaurant">Profile Picture Restaurant </string>
     <string name="backgroundOrange">BackgroundOrange </string>
     <string name="call">Call </string>
@@ -67,16 +66,16 @@
     <string name="notifications">Notifications </string>
     <string name="background_settings">Background settings </string>
     <string name="avatar_settings">Avatar settings </string>
-    <string name="autocomplete_background" translatable="false">Autocomplete Background </string>
-    <string name="avatar_workmate" translatable="false">Avatar Workmate </string>
-    <string name="avatar_listview" translatable="false">Avatar Listview </string>
-    <string name="logo_workmate" translatable="false">Logo Workmate </string>
-    <string name="one_star_full" translatable="false">First Star Full </string>
-    <string name="one_star_empty" translatable="false">First Star Empty </string>
-    <string name="two_star_full" translatable="false">Second Star Full </string>
-    <string name="two_star_empty" translatable="false">Second Star Empty </string>
-    <string name="three_star_full" translatable="false">Third Star Full </string>
-    <string name="three_star_empty" translatable="false">Third Star Empty </string>
+    <string name="autocomplete_background">Autocomplete Background </string>
+    <string name="avatar_workmate">Avatar Workmate </string>
+    <string name="avatar_listview">Avatar Listview </string>
+    <string name="logo_workmate">Logo Workmate </string>
+    <string name="one_star_full">First Star Full </string>
+    <string name="one_star_empty">First Star Empty </string>
+    <string name="two_star_full">Second Star Full </string>
+    <string name="two_star_empty">Second Star Empty </string>
+    <string name="three_star_full">Third Star Full </string>
+    <string name="three_star_empty">Third Star Empty </string>
 
 
 

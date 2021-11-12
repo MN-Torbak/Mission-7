@@ -30,8 +30,8 @@ public class UserManager {
         return mUserRepository.createUser(id, avatar, name);
     }
 
-    public Task<Void> createLike(String id, String workmateId, String restaurantId) {
-        return mUserRepository.createLike(id, workmateId, restaurantId);
+    public void createLike(String id, String workmateId, String restaurantId) {
+        mUserRepository.createLike(id, workmateId, restaurantId);
     }
 
     // --- GET ---

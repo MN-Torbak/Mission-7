@@ -100,11 +100,8 @@ public class NotificationsWorker extends Worker {
     }
 
     public String getText(String restaurant, String restaurant_address, String workmatelist) {
-
-        //TODO: faire ce string
         return getApplicationContext().getString(R.string.choice) + restaurant + " " + restaurant_address + getApplicationContext().getString(R.string.join) + workmatelist;
     }
-
 
     @Nullable
     protected FirebaseUser getCurrentUser() {

@@ -24,6 +24,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.maxime.go4lunch.DrawerActivity;
 import com.maxime.go4lunch.MainActivity;
 import com.maxime.go4lunch.api.UserRepository;
 import com.maxime.go4lunch.model.Workmate;
@@ -120,16 +121,17 @@ public class SettingsFragment extends Fragment {
             mSharedViewModel.getUser(this.mSharedViewModel.getCurrentUser().getUid(), new UserRepository.OnUserSuccessListener() {
                 @Override
                 public void onUserSuccess(Workmate currentWorkmate) {
-                    assert currentWorkmate != null;
-                    String username = TextUtils.isEmpty(currentWorkmate.getName()) ? getString(R.string.info_no_username_found) : currentWorkmate.getName();
-                    name.setText(username);
-                    String useravatar = TextUtils.isEmpty(currentWorkmate.getAvatar()) ? getString(R.string.info_no_useravatar_found) : currentWorkmate.getAvatar();
-                    avatarEdit.setText(useravatar);
-                    if (currentWorkmate.getAvatar() != null) {
-                        Glide.with(requireContext())
-                                .load(currentWorkmate.getAvatar())
-                                .apply(RequestOptions.circleCropTransform())
-                                .into(avatar);
+                    if (currentWorkmate != null) {
+                        String username = TextUtils.isEmpty(currentWorkmate.getName()) ? getString(R.string.info_no_username_found) : currentWorkmate.getName();
+                        name.setText(username);
+                        String useravatar = TextUtils.isEmpty(currentWorkmate.getAvatar()) ? getString(R.string.info_no_useravatar_found) : currentWorkmate.getAvatar();
+                        avatarEdit.setText(useravatar);
+                        if (currentWorkmate.getAvatar() != null) {
+                            Glide.with(requireContext())
+                                    .load(currentWorkmate.getAvatar())
+                                    .apply(RequestOptions.circleCropTransform())
+                                    .into(avatar);
+                        }
                     }
                 }
             });
@@ -173,6 +175,7 @@ public class SettingsFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         deleteUserFromFirebase();
+                        startMainActivity();
                     }
                 })
                 .setNegativeButton(R.string.popup_message_choice_no, null)

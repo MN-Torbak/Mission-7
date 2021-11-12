@@ -53,4 +53,14 @@
     <string name="notifications">Notifications</string>
     <string name="background_settings">Arrière-plan paramètres</string>
     <string name="avatar_settings">Avatar paramètres</string>
+    <string name="autocomplete_background">Barre de recherche</string>
+    <string name="avatar_workmate">Avatar du collègue</string>
+    <string name="avatar_listview">Avatar de la liste des restaurants</string>
+    <string name="logo_workmate">Logo collègue</string>
+    <string name="one_star_full">Première étoile pleine</string>
+    <string name="one_star_empty">Première étoile vide</string>
+    <string name="two_star_full">Deuxième étoile pleine</string>
+    <string name="two_star_empty">Deuxième étoile vide</string>
+    <string name="three_star_full">Troisème étoile pleine</string>
+    <string name="three_star_empty">Deuxième étoile vide</string>
 </resources>
