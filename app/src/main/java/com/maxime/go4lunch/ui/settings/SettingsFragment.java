@@ -138,7 +138,7 @@ public class SettingsFragment extends Fragment {
 
             if (mPreferences.getBoolean("notification_boolean", true)) {
                 notifications.setBackground(getResources().getDrawable(R.drawable.notification_check));
-            } else if (mPreferences.getBoolean("notification_boolean", false)) {
+            } else {
                 notifications.setBackground(getResources().getDrawable(R.drawable.notification_cross));
             }
         }

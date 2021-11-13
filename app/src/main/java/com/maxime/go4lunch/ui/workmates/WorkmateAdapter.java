@@ -17,7 +17,10 @@ import com.bumptech.glide.request.RequestOptions;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Workmate;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class WorkmateAdapter extends RecyclerView.Adapter<WorkmateAdapter.WorkmateViewHolder> {
 
@@ -57,8 +60,10 @@ public class WorkmateAdapter extends RecyclerView.Adapter<WorkmateAdapter.Workma
         if (workmate.getRestaurant().equals("aucun")) {
             holder.mName.setTypeface(null, Typeface.ITALIC);
             holder.mName.setText(holder.mName.getContext().getString(R.string.not_chosen, workmate.getName()));
+        } else if (!getReadableDate().equals(workmate.getRestaurant_date_choice())){
+            holder.mName.setTypeface(null, Typeface.ITALIC);
+            holder.mName.setText(holder.mName.getContext().getString(R.string.not_chosen, workmate.getName()));
         } else {
-
             holder.mName.setText(holder.mName.getContext().getString(R.string.chosen, workmate.getName(), workmate.getRestaurant()));
         }
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +76,12 @@ public class WorkmateAdapter extends RecyclerView.Adapter<WorkmateAdapter.Workma
 
             }
         });
+    }
+
+    private String getReadableDate() {
+        Date now = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
+        return formatter.format(now);
     }
 
 

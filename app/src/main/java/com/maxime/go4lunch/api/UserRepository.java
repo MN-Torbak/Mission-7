@@ -17,10 +17,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Workmate;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class UserRepository {
 
@@ -54,6 +56,8 @@ public class UserRepository {
             if (workmate != null) {
                 if (workmate.getRestaurant().equals("aucun")) {
                     workmates.add(workmates.size(), workmate);
+                } else if (!workmate.getRestaurant_date_choice().equals(getReadableDate())){
+                    workmates.add(workmates.size(), workmate);
                 } else {
                     workmates.add(0, workmate);
                 }
@@ -61,6 +65,12 @@ public class UserRepository {
         }
 
         return workmates;
+    }
+
+    private String getReadableDate() {
+        Date now = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
+        return formatter.format(now);
     }
 
     public void getLikesCollection(LikesListener listener) {

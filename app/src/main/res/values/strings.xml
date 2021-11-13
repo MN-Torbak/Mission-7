@@ -17,7 +17,7 @@
     <string name="open">Open %sH%s</string>
     <string name="close">Close %sH%s</string>
     <string name="choice">You chose: </string>
-    <string name="join">You will be joined by: </string>
+    <string name="join">"You will be joined by: "</string>
     <string name="unknown_schedule">Unknown schedule</string>
 
     <string name="facebook_application_id" translatable="false">187118033500985</string>

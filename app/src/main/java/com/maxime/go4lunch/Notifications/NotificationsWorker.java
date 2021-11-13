@@ -1,17 +1,15 @@
 package com.maxime.go4lunch.Notifications;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.api.UserManager;
 import com.maxime.go4lunch.api.UserRepository;
@@ -22,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class NotificationsWorker extends Worker {
 
@@ -51,11 +48,13 @@ public class NotificationsWorker extends Worker {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "k")
                 .setSmallIcon(R.drawable.ic_your_lunch)
                 .setContentTitle("Go4Lunch")
-                .setContentText(getText(restaurantName, restaurantAddress, workmateWhoJoined))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                .setContentText("")
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(getText(restaurantName, restaurantAddress, workmateWhoJoined)))
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
-
         notificationManager.notify(0, builder.build());
+
     }
 
     private String getReadableDate() {
@@ -65,7 +64,7 @@ public class NotificationsWorker extends Worker {
     }
 
     private void getUser() {
-        mUserManager.getUser(Objects.requireNonNull(getCurrentUser()).getUid(), new UserRepository.OnUserSuccessListener() {
+        mUserManager.getUser(mUserManager.getCurrentUser().getUid(), new UserRepository.OnUserSuccessListener() {
             @Override
             public void onUserSuccess(Workmate workmate) {
                 getAllInformationsForNotifications(workmate.getRestaurant(), workmate.getRestaurant_address(), workmate.getRestaurant_date_choice());
@@ -80,13 +79,17 @@ public class NotificationsWorker extends Worker {
     }
 
     private String getAllWorkmateWhoJoined(List<Workmate> workmates, String restaurantName) {
-        String workmateList = "";
+        StringBuilder workmateList = new StringBuilder();
         for (Workmate workmate : workmates) {
-            if (workmate.getRestaurant().equals(restaurantName)) {
-                workmateList = workmate + workmate.getName();
+            if (workmate.getRestaurant().equals(restaurantName)&&workmate.getRestaurant_date_choice().equals(getReadableDate())&&!workmate.getName().equals(mUserManager.getCurrentUser().getDisplayName())) {
+                workmateList.append(workmate.getName()).append(", ");
+
             }
         }
-        return workmateList;
+        if (workmateList.length() > 0) {
+            return workmateList.substring(0, workmateList.length() - 2);
+        }
+        return workmateList.toString();
     }
 
     private void getAllInformationsForNotifications(String restaurantName, String restaurantAddress, String restaurantDate) {
@@ -100,11 +103,11 @@ public class NotificationsWorker extends Worker {
     }
 
     public String getText(String restaurant, String restaurant_address, String workmatelist) {
-        return getApplicationContext().getString(R.string.choice) + restaurant + " " + restaurant_address + getApplicationContext().getString(R.string.join) + workmatelist;
+        if (workmatelist.equals("")) {
+            return getApplicationContext().getString(R.string.choice) + " " + restaurant + ", " + restaurant_address;
+        } else {
+            return getApplicationContext().getString(R.string.choice) + " " + restaurant + " " + restaurant_address + ". " + getApplicationContext().getString(R.string.join) + workmatelist;
+        }
     }
 
-    @Nullable
-    protected FirebaseUser getCurrentUser() {
-        return FirebaseAuth.getInstance().getCurrentUser();
-    }
 }

@@ -163,7 +163,7 @@ public class RestaurantDetailsFragment extends Fragment {
                     mSharedViewModel.updateUserRestaurantDateChoice(mWorkmate.getId(), result);
                     restaurantProfil.getWorkmatesEatingHere().add(mWorkmate);
                     getAllWorkmatesWhoEatHere();
-                    createNotif();
+                    createNotification();
                 }
                 mSharedViewModel.getWorkmates();
             }
@@ -244,11 +244,12 @@ public class RestaurantDetailsFragment extends Fragment {
         }
     }
 
-    public void createNotif() {
-        new OneTimeWorkRequest.Builder(NotificationsWorker.class)
+    public void createNotification() {
+        OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(NotificationsWorker.class)
                 .setInitialDelay(getMilliseconds(), TimeUnit.MILLISECONDS)
-                .addTag("Notif")
+                .addTag("Notify")
                 .build();
+        WorkManager.getInstance().enqueue(oneTimeWorkRequest);
     }
 
     private long getMilliseconds() {
@@ -311,12 +312,18 @@ public class RestaurantDetailsFragment extends Fragment {
             public void onWorkmatesSuccess(List<Workmate> workmates) {
                 List<Workmate> workmateWhoEatHere = new ArrayList<>();
                 for (Workmate workmate : workmates) {
-                    if (workmate.getRestaurant().equals(restaurantProfil.getName())) {
+                    if (workmate.getRestaurant().equals(restaurantProfil.getName())&& workmate.getRestaurant_date_choice().equals(getReadableDate())) {
                         workmateWhoEatHere.add(workmate);
                     }
                 }
                 displayWorkmates(workmateWhoEatHere);
             }
         });
+    }
+
+    private String getReadableDate() {
+        Date now = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
+        return formatter.format(now);
     }
 }
