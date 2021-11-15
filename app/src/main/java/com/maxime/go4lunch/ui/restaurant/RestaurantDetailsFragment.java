@@ -150,7 +150,7 @@ public class RestaurantDetailsFragment extends Fragment {
                     mSharedViewModel.updateUserRestaurantID(mWorkmate.getId(), "unknow");
                     restaurantProfil.getWorkmatesEatingHere().remove(mWorkmate);
                     getAllWorkmatesWhoEatHere();
-                    WorkManager.getInstance(requireContext()).cancelAllWorkByTag("Notif");
+                    WorkManager.getInstance(requireContext()).cancelAllWorkByTag("Notify");
                 } else {
                     choice = true;
                     fab.setImageResource(R.drawable.ic_checkbox_selected);
