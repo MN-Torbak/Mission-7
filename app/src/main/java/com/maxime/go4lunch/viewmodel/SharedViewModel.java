@@ -31,8 +31,11 @@ import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -174,13 +177,34 @@ public class SharedViewModel extends ViewModel {
             if (workmate.getRestaurant() != null) {
                 assert restaurants != null;
                 for (Restaurant restaurant : restaurants) {
-                    if (restaurant.getName().equals(workmate.getRestaurant())) {
+                    boolean sameName = restaurant.getName().equals(workmate.getRestaurant());
+                    boolean sameDate = workmate.getRestaurant_date_choice().equals(getReadableDate());
+                    boolean containsList = isWorkmateInList(workmate, restaurant.getWorkmatesEatingHere());
+                    if (sameName && sameDate && !containsList) {
                         restaurant.getWorkmatesEatingHere().add(workmate);
+                    } else if (!sameName && containsList && sameDate) {
+                        restaurant.setWorkmatesEatingHere(new ArrayList<>());
                     }
                 }
             }
         }
         liveRestaurant.postValue(restaurants);
+    }
+
+    private boolean isWorkmateInList(Workmate workmateOne, List<Workmate> workmates) {
+        boolean isInList = false;
+        for (Workmate workmate : workmates) {
+            if (workmateOne.getId().equals(workmate.getId())) {
+                isInList = true;
+            }
+        }
+        return isInList;
+    }
+
+    private String getReadableDate() {
+        Date now = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
+        return formatter.format(now);
     }
 
     public void getAllLikes() {

@@ -163,6 +163,7 @@ public class RestaurantDetailsFragment extends Fragment {
                     mSharedViewModel.updateUserRestaurantDateChoice(mWorkmate.getId(), result);
                     restaurantProfil.getWorkmatesEatingHere().add(mWorkmate);
                     getAllWorkmatesWhoEatHere();
+                    WorkManager.getInstance(requireContext()).cancelAllWorkByTag("Notify");
                     createNotification();
                 }
                 mSharedViewModel.getWorkmates();

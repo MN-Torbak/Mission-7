@@ -34,8 +34,11 @@ import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.viewmodel.SharedViewModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -151,6 +154,12 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 }
             }
         });
+    }
+
+    private String getReadableDate() {
+        Date now = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
+        return formatter.format(now);
     }
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;

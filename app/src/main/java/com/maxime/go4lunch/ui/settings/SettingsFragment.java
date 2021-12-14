@@ -141,16 +141,19 @@ public class SettingsFragment extends Fragment {
             } else {
                 notifications.setBackground(getResources().getDrawable(R.drawable.notification_cross));
             }
+            this.mSharedViewModel.getWorkmates();
         }
     }
 
 
     public void onClickUpdateButton() {
         this.updateUsernameInFirebase();
+        updateUIWhenCreating();
     }
 
     public void onClickUpdateAvatarButton() {
         this.updateUseravatarInFirebase();
+        updateUIWhenCreating();
     }
 
     public void onClickNotifications() {
