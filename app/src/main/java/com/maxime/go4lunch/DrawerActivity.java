@@ -32,7 +32,10 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class DrawerActivity extends AppCompatActivity {
 
@@ -155,7 +158,7 @@ public class DrawerActivity extends AppCompatActivity {
 
     private void navigate(Workmate workmate) {
         Restaurant restaurant = mSharedViewModel.liveMyRestaurant.getValue();
-        if (!workmate.getRestaurant().equals("aucun")) {
+        if (!workmate.getRestaurant().equals("aucun") && getReadableDate().equals(mWorkmate.getRestaurant_date_choice())) {
             Bundle b = new Bundle();
             b.putString("restaurant", workmate.getRestaurantID());
             YourLunchFragment yourLunchFragment = new YourLunchFragment();
@@ -179,6 +182,12 @@ public class DrawerActivity extends AppCompatActivity {
 
     public void closeDrawer() {
         drawer.closeDrawers();
+    }
+
+    private String getReadableDate() {
+        Date now = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
+        return formatter.format(now);
     }
 
 }

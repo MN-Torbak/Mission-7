@@ -231,7 +231,7 @@ public class RestaurantDetailsFragment extends Fragment {
                         if (workmate.getId().equals(mSharedViewModel.getCurrentUser().getUid())) {
                             mWorkmate = workmate;
 
-                            if (workmate.getRestaurant().equals(restaurantProfil.getName())) {
+                            if (workmate.getRestaurant().equals(restaurantProfil.getName()) && workmate.getRestaurant_date_choice().equals(getReadableDate())) {
                                 choice = true;
                                 fab.setImageResource(R.drawable.ic_checkbox_selected);
                             } else {

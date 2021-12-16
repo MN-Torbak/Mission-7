@@ -1,5 +1,6 @@
 package com.maxime.go4lunch.ui.yourlunch;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -60,7 +62,11 @@ public class YourLunchFragment extends Fragment {
             public void onPlaceSelected(@NonNull Place place) {
                 Bundle b = new Bundle();
                 b.putString("restaurant", new Restaurant(place).getId());
-                mNavController.navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment, b);
+                if (requireActivity().findViewById(R.id.button_tri).isClickable()) {
+                    mNavController.navigate(R.id.action_navigation_list_view_to_restaurantDetailsFragment, b);
+                } else {
+                    mNavController.navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment, b);
+                }
             }
 
             @Override

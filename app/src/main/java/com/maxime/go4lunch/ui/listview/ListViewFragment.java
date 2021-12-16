@@ -73,6 +73,7 @@ public class ListViewFragment extends Fragment {
         mTriSpinner = requireActivity().findViewById(R.id.tri_spinner);
         requireActivity().findViewById(R.id.tri_spinner).setVisibility(View.INVISIBLE);
         requireActivity().findViewById(R.id.button_tri).setVisibility(View.VISIBLE);
+        requireActivity().findViewById(R.id.button_tri).setClickable(true);
 
         mTriSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

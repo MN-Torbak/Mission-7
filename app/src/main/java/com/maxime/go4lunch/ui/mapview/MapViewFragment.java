@@ -91,6 +91,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         requireActivity().findViewById(R.id.autocomplete_background).setVisibility(View.VISIBLE);
         requireActivity().findViewById(R.id.tri_spinner).setVisibility(View.GONE);
         requireActivity().findViewById(R.id.button_tri).setVisibility(View.GONE);
+        requireActivity().findViewById(R.id.button_tri).setClickable(false);
         return view;
     }
 
