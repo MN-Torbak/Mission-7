@@ -76,16 +76,13 @@ public class YourLunchFragment extends Fragment {
         Button buttonTri = root.findViewById(R.id.button_tri);
         buttonTri.setVisibility(View.GONE);
         Spinner tri_spinner = root.findViewById(R.id.tri_spinner);
-        buttonTri.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                tri_spinner.setVisibility(View.INVISIBLE);
-                tri_spinner.performClick();
-                ArrayAdapter<CharSequence> adapterLocation = ArrayAdapter.createFromResource(requireContext(),
-                        R.array.tri_spinner, android.R.layout.simple_spinner_item);
-                adapterLocation.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                tri_spinner.setAdapter(adapterLocation);
-            }
+        buttonTri.setOnClickListener(v -> {
+            tri_spinner.setVisibility(View.INVISIBLE);
+            tri_spinner.performClick();
+            ArrayAdapter<CharSequence> adapterLocation = ArrayAdapter.createFromResource(requireContext(),
+                    R.array.tri_spinner, android.R.layout.simple_spinner_item);
+            adapterLocation.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            tri_spinner.setAdapter(adapterLocation);
         });
         return root;
 

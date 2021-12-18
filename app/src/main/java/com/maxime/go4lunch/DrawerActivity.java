@@ -75,32 +75,23 @@ public class DrawerActivity extends AppCompatActivity {
         assert navHostFragment != null;
         NavController navController = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(navigationView, navController);
-        navigationView.getMenu().findItem(R.id.nav_your_lunch).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                navigate(mWorkmate);
-                return true;
-            }
+        navigationView.getMenu().findItem(R.id.nav_your_lunch).setOnMenuItemClickListener(item -> {
+            navigate(mWorkmate);
+            return true;
         });
-        navigationView.getMenu().findItem(R.id.nav_settings).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                SettingsFragment settingsFragment = new SettingsFragment();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.nav_host_fragment, settingsFragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                drawer.closeDrawers();
-                return true;
-            }
+        navigationView.getMenu().findItem(R.id.nav_settings).setOnMenuItemClickListener(item -> {
+            SettingsFragment settingsFragment = new SettingsFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.nav_host_fragment, settingsFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            drawer.closeDrawers();
+            return true;
         });
-        navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                signOutUserFromFirebase();
-                return true;
-            }
+        navigationView.getMenu().findItem(R.id.nav_logout).setOnMenuItemClickListener(item -> {
+            signOutUserFromFirebase();
+            return true;
         });
 
     }
@@ -128,36 +119,30 @@ public class DrawerActivity extends AppCompatActivity {
     }
 
     private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted() {
-        return new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                finish();
-                startMainActivity();
-            }
+        return aVoid -> {
+            finish();
+            startMainActivity();
         };
     }
 
     private void observeWorkmates(ImageView avatar, TextView name, TextView mail) {
-        mSharedViewModel.liveWorkmates.observe(this, new Observer<ArrayList<Workmate>>() {
-            @Override
-            public void onChanged(final ArrayList<Workmate> workmates) {
-                for (Workmate workmate : workmates) {
-                    if (workmate.getId().equals(mSharedViewModel.getCurrentUser().getUid())) {
-                        mWorkmate = workmate;
-                        Glide.with(avatar.getContext())
-                                .load((mWorkmate.getAvatar()))
-                                .apply(RequestOptions.circleCropTransform())
-                                .into(avatar);
-                        name.setText(mWorkmate.getName());
-                        mail.setText(mSharedViewModel.getCurrentUser().getEmail());
-                    }
+        mSharedViewModel.getLiveWorkmate().observe(this, workmates -> {
+            for (Workmate workmate : workmates) {
+                if (workmate.getId().equals(mSharedViewModel.getCurrentUser().getUid())) {
+                    mWorkmate = workmate;
+                    Glide.with(avatar.getContext())
+                            .load((mWorkmate.getAvatar()))
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(avatar);
+                    name.setText(mWorkmate.getName());
+                    mail.setText(mSharedViewModel.getCurrentUser().getEmail());
                 }
             }
         });
     }
 
     private void navigate(Workmate workmate) {
-        Restaurant restaurant = mSharedViewModel.liveMyRestaurant.getValue();
+        Restaurant restaurant = mSharedViewModel.getLiveMyRestaurant().getValue();
         if (!workmate.getRestaurant().equals("aucun") && getReadableDate().equals(mWorkmate.getRestaurant_date_choice())) {
             Bundle b = new Bundle();
             b.putString("restaurant", workmate.getRestaurantID());

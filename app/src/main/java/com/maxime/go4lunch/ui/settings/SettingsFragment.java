@@ -24,7 +24,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.maxime.go4lunch.DrawerActivity;
 import com.maxime.go4lunch.MainActivity;
 import com.maxime.go4lunch.api.UserRepository;
 import com.maxime.go4lunch.model.Workmate;
@@ -69,40 +68,15 @@ public class SettingsFragment extends Fragment {
         mSharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
         this.updateUIWhenCreating();
 
-        updateName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onClickUpdateButton();
-            }
-        });
+        updateName.setOnClickListener(view1 -> onClickUpdateButton());
 
-        updateAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onClickUpdateAvatarButton();
-            }
-        });
+        updateAvatar.setOnClickListener(view12 -> onClickUpdateAvatarButton());
 
-        notifications.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onClickNotifications();
-            }
-        });
+        notifications.setOnClickListener(view13 -> onClickNotifications());
 
-        signOut.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onClickSignOutButton();
-            }
-        });
+        signOut.setOnClickListener(view14 -> onClickSignOutButton());
 
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onClickDeleteButton();
-            }
-        });
+        delete.setOnClickListener(view15 -> onClickDeleteButton());
         return view;
     }
 
@@ -118,20 +92,17 @@ public class SettingsFragment extends Fragment {
                         .into(avatar);
             }
 
-            mSharedViewModel.getUser(this.mSharedViewModel.getCurrentUser().getUid(), new UserRepository.OnUserSuccessListener() {
-                @Override
-                public void onUserSuccess(Workmate currentWorkmate) {
-                    if (currentWorkmate != null) {
-                        String username = TextUtils.isEmpty(currentWorkmate.getName()) ? getString(R.string.info_no_username_found) : currentWorkmate.getName();
-                        name.setText(username);
-                        String useravatar = TextUtils.isEmpty(currentWorkmate.getAvatar()) ? getString(R.string.info_no_useravatar_found) : currentWorkmate.getAvatar();
-                        avatarEdit.setText(useravatar);
-                        if (currentWorkmate.getAvatar() != null) {
-                            Glide.with(requireContext())
-                                    .load(currentWorkmate.getAvatar())
-                                    .apply(RequestOptions.circleCropTransform())
-                                    .into(avatar);
-                        }
+            mSharedViewModel.getUser(this.mSharedViewModel.getCurrentUser().getUid(), currentWorkmate -> {
+                if (currentWorkmate != null) {
+                    String username = TextUtils.isEmpty(currentWorkmate.getName()) ? getString(R.string.info_no_username_found) : currentWorkmate.getName();
+                    name.setText(username);
+                    String useravatar = TextUtils.isEmpty(currentWorkmate.getAvatar()) ? getString(R.string.info_no_useravatar_found) : currentWorkmate.getAvatar();
+                    avatarEdit.setText(useravatar);
+                    if (currentWorkmate.getAvatar() != null) {
+                        Glide.with(requireContext())
+                                .load(currentWorkmate.getAvatar())
+                                .apply(RequestOptions.circleCropTransform())
+                                .into(avatar);
                     }
                 }
             });
@@ -174,12 +145,9 @@ public class SettingsFragment extends Fragment {
     public void onClickDeleteButton() {
         new AlertDialog.Builder(getContext())
                 .setMessage(R.string.popup_message_confirmation_delete_account)
-                .setPositiveButton(R.string.popup_message_choice_yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        deleteUserFromFirebase();
-                        startMainActivity();
-                    }
+                .setPositiveButton(R.string.popup_message_choice_yes, (dialogInterface, i) -> {
+                    deleteUserFromFirebase();
+                    startMainActivity();
                 })
                 .setNegativeButton(R.string.popup_message_choice_no, null)
                 .show();
@@ -223,21 +191,18 @@ public class SettingsFragment extends Fragment {
     }
 
     private OnSuccessListener<Void> updateUIAfterRESTRequestsCompleted(final int origin) {
-        return new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                switch (origin) {
-                    case UPDATE_USERNAME:
-                        Toast.makeText(getContext(), getString(R.string.username_updated), Toast.LENGTH_LONG).show();
-                        break;
-                    case UPDATE_USERAVATAR:
-                        Toast.makeText(getContext(), getString(R.string.useravatar_updated), Toast.LENGTH_LONG).show();
-                        break;
-                    case SIGN_OUT_TASK:
-                        requireActivity().finish();
-                        startMainActivity();
-                        break;
-                }
+        return aVoid -> {
+            switch (origin) {
+                case UPDATE_USERNAME:
+                    Toast.makeText(getContext(), getString(R.string.username_updated), Toast.LENGTH_LONG).show();
+                    break;
+                case UPDATE_USERAVATAR:
+                    Toast.makeText(getContext(), getString(R.string.useravatar_updated), Toast.LENGTH_LONG).show();
+                    break;
+                case SIGN_OUT_TASK:
+                    requireActivity().finish();
+                    startMainActivity();
+                    break;
             }
         };
     }
@@ -248,12 +213,7 @@ public class SettingsFragment extends Fragment {
     }
 
     protected OnFailureListener onFailureListener() {
-        return new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
-            }
-        };
+        return e -> Toast.makeText(getContext(), getString(R.string.error_unknown_error), Toast.LENGTH_LONG).show();
     }
 
 }

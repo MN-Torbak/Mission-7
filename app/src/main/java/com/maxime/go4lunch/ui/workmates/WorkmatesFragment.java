@@ -52,12 +52,7 @@ public class WorkmatesFragment extends Fragment {
     }
 
     private void getAllDocs() {
-        mSharedViewModel.getUsersCollection(new UserRepository.WorkmatesListener() {
-            @Override
-            public void onWorkmatesSuccess(List<Workmate> workmates) {
-                displayWorkmates(workmates);
-            }
-        });
+        mSharedViewModel.getUsersCollection(this::displayWorkmates);
     }
 }
 

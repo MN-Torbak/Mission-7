@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 
@@ -34,11 +33,7 @@ import com.maxime.go4lunch.R;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.viewmodel.SharedViewModel;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -59,15 +54,18 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
+
         }
         locationManager = (LocationManager)
                 requireActivity().getSystemService(Context.LOCATION_SERVICE);
+
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
                 if (mMap == null) {
                     return;
                 }
+
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 17));
                 mSharedViewModel.updateLocation(location);
             }
@@ -99,6 +97,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mSharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+
     }
 
     private Restaurant getRestaurantFromMarker(Marker m, List<Restaurant> restaurants) {
@@ -110,57 +109,47 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         return null;
     }
 
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         enableMyLocation();
         mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(.getLatitude(), location.getLongitude()), 17));
         try {
             locationManager.requestLocationUpdates(
                     LocationManager.GPS_PROVIDER, 1000, 10, locationListener);
         } catch (SecurityException e) {
             Log.d("logmap", "requestlocationupdateerror");
         }
-        mSharedViewModel.liveRestaurant.observe(requireActivity(), new Observer<ArrayList<Restaurant>>() {
-            @Override
-            public void onChanged(final ArrayList<Restaurant> restaurants) {
-                for (Restaurant currentRestaurant : restaurants) {
-                    final LatLng position = (currentRestaurant.getLatlng());
-                    int markerDrawable = R.drawable.orange_icon_lunch;
-                    if (currentRestaurant.getWorkmatesEatingHere().size() > 0) {
-                        markerDrawable = R.drawable.green_icon_lunch;
-                    }
-                    if (mMap != null) {
-                        mMap.addMarker(new MarkerOptions()
-                                .position(position)
-                                .title(currentRestaurant.getName())
-                                .snippet(currentRestaurant.getAddress())
-                                .icon(BitmapDescriptorFactory
-                                        .fromResource(markerDrawable)));
-                    }
-
+        if (!(getView() == null)) {
+        mSharedViewModel.getLiveRestaurant().observe(getViewLifecycleOwner(), restaurants -> {
+            for (Restaurant currentRestaurant : restaurants) {
+                final LatLng position = (currentRestaurant.getLatlng());
+                int markerDrawable = R.drawable.orange_icon_lunch;
+                if (currentRestaurant.getWorkmatesEatingHere().size() > 0) {
+                    markerDrawable = R.drawable.green_icon_lunch;
                 }
                 if (mMap != null) {
-                    mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                        @Override
-                        public boolean onMarkerClick(Marker m) {
-                            Bundle b = new Bundle();
-                            b.putString("restaurant", Objects.requireNonNull(getRestaurantFromMarker(m, restaurants)).getId());
-                            NavHostFragment.findNavController(MapViewFragment.this).navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment, b);
-                            return false;
-                        }
-                    });
+                    mMap.addMarker(new MarkerOptions()
+                            .position(position)
+                            .title(currentRestaurant.getName())
+                            .snippet(currentRestaurant.getAddress())
+                            .icon(BitmapDescriptorFactory
+                                    .fromResource(markerDrawable)));
                 }
+
+            }
+            if (mMap != null) {
+                mMap.setOnMarkerClickListener(m -> {
+                    Bundle b = new Bundle();
+                    b.putString("restaurant", Objects.requireNonNull(getRestaurantFromMarker(m, restaurants)).getId());
+                    NavHostFragment.findNavController(MapViewFragment.this).navigate(R.id.action_navigation_map_view_to_restaurantDetailsFragment, b);
+                    return false;
+                });
             }
         });
-    }
-
-    private String getReadableDate() {
-        Date now = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
-        return formatter.format(now);
+        }
     }
 
     private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;

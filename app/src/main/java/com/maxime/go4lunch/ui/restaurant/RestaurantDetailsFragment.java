@@ -1,7 +1,6 @@
 package com.maxime.go4lunch.ui.restaurant;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +26,6 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.maxime.go4lunch.Notifications.NotificationsWorker;
 import com.maxime.go4lunch.R;
-import com.maxime.go4lunch.api.UserRepository;
 import com.maxime.go4lunch.model.Like;
 import com.maxime.go4lunch.model.Restaurant;
 import com.maxime.go4lunch.model.Workmate;
@@ -91,8 +88,8 @@ public class RestaurantDetailsFragment extends Fragment {
         mSharedViewModel.getWorkmates();
         mSharedViewModel.getAllLikes();
         mSharedViewModel.getRestaurant(requireActivity());
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        likeRestaurant = (Button) view.findViewById(R.id.like);
+        fab = view.findViewById(R.id.fab);
+        likeRestaurant = view.findViewById(R.id.like);
 
         ProgressBar spinner = new android.widget.ProgressBar(
                 getContext(),
@@ -105,32 +102,26 @@ public class RestaurantDetailsFragment extends Fragment {
         final Bundle b = this.getArguments();
         if (b != null && b.getString("restaurant") != null) {
             mSharedViewModel.getRestaurantFromId(getContext(), b.getString("restaurant"));
-            mSharedViewModel.liveMyRestaurant.observe(requireActivity(), new Observer<Restaurant>() {
-                @Override
-                public void onChanged(final Restaurant restaurant) {
-                    restaurantProfil = restaurant;
-                    displayRestaurantInformations();
-                    getAllWorkmatesWhoEatHere();
-                    observeWorkmate();
-                    if (mProgressBar.getVisibility() == View.VISIBLE) {
-                        mProgressBar.setVisibility(View.INVISIBLE);
-                    }
+            mSharedViewModel.getLiveMyRestaurant().observe(getViewLifecycleOwner(), restaurant -> {
+                restaurantProfil = restaurant;
+                displayRestaurantInformations();
+                getAllWorkmatesWhoEatHere();
+                observeWorkmate();
+                if (mProgressBar.getVisibility() == View.VISIBLE) {
+                    mProgressBar.setVisibility(View.INVISIBLE);
                 }
             });
         } else {
-            mSharedViewModel.liveRestaurant.observe(requireActivity(), new Observer<ArrayList<Restaurant>>() {
-                @Override
-                public void onChanged(final ArrayList<Restaurant> restaurants) {
-                    for (Restaurant restaurant : restaurants) {
-                        if (b != null) {
-                            if (Objects.equals(b.getString("restaurant"), restaurant.getName())) {
-                                restaurantProfil = restaurant;
-                                displayRestaurantInformations();
-                                getAllWorkmatesWhoEatHere();
-                                observeWorkmate();
-                                if (mProgressBar.getVisibility() == View.VISIBLE) {
-                                    mProgressBar.setVisibility(View.INVISIBLE);
-                                }
+            mSharedViewModel.getLiveRestaurant().observe(getViewLifecycleOwner(), restaurants -> {
+                for (Restaurant restaurant : restaurants) {
+                    if (b != null) {
+                        if (Objects.equals(b.getString("restaurant"), restaurant.getName())) {
+                            restaurantProfil = restaurant;
+                            displayRestaurantInformations();
+                            getAllWorkmatesWhoEatHere();
+                            observeWorkmate();
+                            if (mProgressBar.getVisibility() == View.VISIBLE) {
+                                mProgressBar.setVisibility(View.INVISIBLE);
                             }
                         }
                     }
@@ -139,61 +130,48 @@ public class RestaurantDetailsFragment extends Fragment {
         }
 
 
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (choice) {
-                    choice = false;
-                    fab.setImageResource(R.drawable.ic_checkbox_not_selected);
-                    mSharedViewModel.updateUserRestaurant(mWorkmate.getId(), "aucun");
-                    mSharedViewModel.updateUserRestaurantAddress(mWorkmate.getId(), "unknow");
-                    mSharedViewModel.updateUserRestaurantID(mWorkmate.getId(), "unknow");
-                    restaurantProfil.getWorkmatesEatingHere().remove(mWorkmate);
-                    getAllWorkmatesWhoEatHere();
-                    WorkManager.getInstance(requireContext()).cancelAllWorkByTag("Notify");
-                } else {
-                    choice = true;
-                    fab.setImageResource(R.drawable.ic_checkbox_selected);
-                    mSharedViewModel.updateUserRestaurant(mWorkmate.getId(), restaurantProfil.getName());
-                    mSharedViewModel.updateUserRestaurantAddress(mWorkmate.getId(), restaurantProfil.getAddress());
-                    mSharedViewModel.updateUserRestaurantID(mWorkmate.getId(), restaurantProfil.getId());
-                    Date now = new Date();
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
-                    String result = formatter.format(now);
-                    mSharedViewModel.updateUserRestaurantDateChoice(mWorkmate.getId(), result);
-                    restaurantProfil.getWorkmatesEatingHere().add(mWorkmate);
-                    getAllWorkmatesWhoEatHere();
-                    WorkManager.getInstance(requireContext()).cancelAllWorkByTag("Notify");
-                    createNotification();
-                }
-                mSharedViewModel.getWorkmates();
+        fab.setOnClickListener(view1 -> {
+            if (choice) {
+                choice = false;
+                fab.setImageResource(R.drawable.ic_checkbox_not_selected);
+                mSharedViewModel.updateUserRestaurant(mWorkmate.getId(), "aucun");
+                mSharedViewModel.updateUserRestaurantAddress(mWorkmate.getId(), "unknow");
+                mSharedViewModel.updateUserRestaurantID(mWorkmate.getId(), "unknow");
+                restaurantProfil.getWorkmatesEatingHere().remove(mWorkmate);
+                getAllWorkmatesWhoEatHere();
+                WorkManager.getInstance(requireContext()).cancelAllWorkByTag("Notify");
+            } else {
+                choice = true;
+                fab.setImageResource(R.drawable.ic_checkbox_selected);
+                mSharedViewModel.updateUserRestaurant(mWorkmate.getId(), restaurantProfil.getName());
+                mSharedViewModel.updateUserRestaurantAddress(mWorkmate.getId(), restaurantProfil.getAddress());
+                mSharedViewModel.updateUserRestaurantID(mWorkmate.getId(), restaurantProfil.getId());
+                Date now = new Date();
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/YYYY", Locale.getDefault());
+                String result = formatter.format(now);
+                mSharedViewModel.updateUserRestaurantDateChoice(mWorkmate.getId(), result);
+                restaurantProfil.getWorkmatesEatingHere().add(mWorkmate);
+                getAllWorkmatesWhoEatHere();
+                WorkManager.getInstance(requireContext()).cancelAllWorkByTag("Notify");
+                createNotification();
             }
+            mSharedViewModel.getWorkmates();
         });
 
-        likeRestaurant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createDialog();
-            }
+        likeRestaurant.setOnClickListener(view12 -> createDialog());
+
+        phoneNumberRestaurant.setOnClickListener(view13 -> {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + restaurantProfil.getPhoneNumber()));
+            startActivity(intent);
         });
 
-        phoneNumberRestaurant.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_DIAL);
-                intent.setData(Uri.parse("tel:" + restaurantProfil.getPhoneNumber()));
-                startActivity(intent);
-            }
-        });
-
-        webSiteRestaurant.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                intent.addCategory(Intent.CATEGORY_BROWSABLE);
-                intent.setData(restaurantProfil.getWebSite());
-                startActivity(intent);
-            }
+        webSiteRestaurant.setOnClickListener(v -> {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_VIEW);
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.setData(restaurantProfil.getWebSite());
+            startActivity(intent);
         });
 
     }
@@ -201,19 +179,17 @@ public class RestaurantDetailsFragment extends Fragment {
     public void createDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Rate the Restaurant")
-                .setItems(R.array.dialog, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                observeLike(1);
-                                break;
-                            case 1:
-                                observeLike(2);
-                                break;
-                            case 2:
-                                observeLike(3);
-                                break;
-                        }
+                .setItems(R.array.dialog, (dialog, which) -> {
+                    switch (which) {
+                        case 0:
+                            observeLike(1);
+                            break;
+                        case 1:
+                            observeLike(2);
+                            break;
+                        case 2:
+                            observeLike(3);
+                            break;
                     }
                 });
         AlertDialog alertDialog = builder.create();
@@ -224,20 +200,17 @@ public class RestaurantDetailsFragment extends Fragment {
     private void observeWorkmate() {
         if (getActivity() != null) {
 
-            mSharedViewModel.liveWorkmates.observe(requireActivity(), new Observer<ArrayList<Workmate>>() {
-                @Override
-                public void onChanged(final ArrayList<Workmate> workmates) {
-                    for (Workmate workmate : workmates) {
-                        if (workmate.getId().equals(mSharedViewModel.getCurrentUser().getUid())) {
-                            mWorkmate = workmate;
+            mSharedViewModel.getLiveWorkmate().observe(requireActivity(), workmates -> {
+                for (Workmate workmate : workmates) {
+                    if (workmate.getId().equals(mSharedViewModel.getCurrentUser().getUid())) {
+                        mWorkmate = workmate;
 
-                            if (workmate.getRestaurant().equals(restaurantProfil.getName()) && workmate.getRestaurant_date_choice().equals(getReadableDate())) {
-                                choice = true;
-                                fab.setImageResource(R.drawable.ic_checkbox_selected);
-                            } else {
-                                choice = false;
-                                fab.setImageResource(R.drawable.ic_checkbox_not_selected);
-                            }
+                        if (workmate.getRestaurant().equals(restaurantProfil.getName()) && workmate.getRestaurant_date_choice().equals(getReadableDate())) {
+                            choice = true;
+                            fab.setImageResource(R.drawable.ic_checkbox_selected);
+                        } else {
+                            choice = false;
+                            fab.setImageResource(R.drawable.ic_checkbox_not_selected);
                         }
                     }
                 }
@@ -273,16 +246,13 @@ public class RestaurantDetailsFragment extends Fragment {
 
     private void observeLike(final Integer intCase) {
         final String likeId = mWorkmate.getId() + restaurantProfil.getId();
-        mSharedViewModel.liveLikes.observe(requireActivity(), new Observer<ArrayList<Like>>() {
-            @Override
-            public void onChanged(final ArrayList<Like> likes) {
-                for (Like like : likes) {
-                    if (like.getId().equals(likeId)) {
-                        mSharedViewModel.updateUserLikeRestaurant(likeId, intCase);
-                    } else {
-                        mSharedViewModel.createLike(likeId, mWorkmate.getId(), restaurantProfil.getId());
-                        mSharedViewModel.updateUserLikeRestaurant(likeId, intCase);
-                    }
+        mSharedViewModel.getLiveLikes().observe(getViewLifecycleOwner(), likes -> {
+            for (Like like : likes) {
+                if (like.getId().equals(likeId)) {
+                    mSharedViewModel.updateUserLikeRestaurant(likeId, intCase);
+                } else {
+                    mSharedViewModel.createLike(likeId, mWorkmate.getId(), restaurantProfil.getId());
+                    mSharedViewModel.updateUserLikeRestaurant(likeId, intCase);
                 }
             }
         });
@@ -308,17 +278,14 @@ public class RestaurantDetailsFragment extends Fragment {
     }
 
     public void getAllWorkmatesWhoEatHere() {
-        mSharedViewModel.getUsersCollection(new UserRepository.WorkmatesListener() {
-            @Override
-            public void onWorkmatesSuccess(List<Workmate> workmates) {
-                List<Workmate> workmateWhoEatHere = new ArrayList<>();
-                for (Workmate workmate : workmates) {
-                    if (workmate.getRestaurant().equals(restaurantProfil.getName())&& workmate.getRestaurant_date_choice().equals(getReadableDate())) {
-                        workmateWhoEatHere.add(workmate);
-                    }
+        mSharedViewModel.getUsersCollection(workmates -> {
+            List<Workmate> workmateWhoEatHere = new ArrayList<>();
+            for (Workmate workmate : workmates) {
+                if (workmate.getRestaurant().equals(restaurantProfil.getName())&& workmate.getRestaurant_date_choice().equals(getReadableDate())) {
+                    workmateWhoEatHere.add(workmate);
                 }
-                displayWorkmates(workmateWhoEatHere);
             }
+            displayWorkmates(workmateWhoEatHere);
         });
     }
 

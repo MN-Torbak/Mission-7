@@ -53,21 +53,13 @@ public class ListViewFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         SharedViewModel sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-        sharedViewModel.liveRestaurant.observe(requireActivity(), new Observer<ArrayList<Restaurant>>() {
-            @Override
-            public void onChanged(ArrayList<Restaurant> restaurants) {
-                displayListView(restaurants);
-                for (Restaurant restaurant : restaurants) {
-                    sharedViewModel.getLikesForRestaurant(restaurant);
-                }
+        sharedViewModel.getLiveRestaurant().observe(getViewLifecycleOwner(), restaurants -> {
+            displayListView(restaurants);
+            for (Restaurant restaurant : restaurants) {
+                sharedViewModel.getLikesForRestaurant(restaurant);
             }
         });
-        sharedViewModel.liveLocation.observe(requireActivity(), new Observer<Location>() {
-            @Override
-            public void onChanged(Location location) {
-                mLocation = location;
-            }
-        });
+        sharedViewModel.getLiveLocation().observe(getViewLifecycleOwner(), location -> mLocation = location);
         requireActivity().findViewById(R.id.autocomplete_fragment).setVisibility(View.VISIBLE);
         requireActivity().findViewById(R.id.autocomplete_background).setVisibility(View.VISIBLE);
         mTriSpinner = requireActivity().findViewById(R.id.tri_spinner);

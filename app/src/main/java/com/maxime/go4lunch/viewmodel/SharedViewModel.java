@@ -6,6 +6,7 @@ import android.location.Location;
 import android.util.Log;
 
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -47,11 +48,19 @@ public class SharedViewModel extends ViewModel {
         mUserManager = new UserManager();
     }
 
-    public MutableLiveData<ArrayList<Restaurant>> liveRestaurant = new MutableLiveData<>();
-    public MutableLiveData<ArrayList<Workmate>> liveWorkmates = new MutableLiveData<>();
-    public MutableLiveData<ArrayList<Like>> liveLikes = new MutableLiveData<>();
-    public MutableLiveData<Location> liveLocation = new MutableLiveData<>();
-    public MutableLiveData<Restaurant> liveMyRestaurant = new MutableLiveData<>();
+    public LiveData<ArrayList<Restaurant>> getLiveRestaurant() {
+        return liveRestaurant;
+    }
+    public LiveData<ArrayList<Workmate>> getLiveWorkmate() { return liveWorkmates; }
+    public LiveData<ArrayList<Like>> getLiveLikes() { return liveLikes; }
+    public LiveData<Location> getLiveLocation() { return liveLocation; }
+    public LiveData<Restaurant> getLiveMyRestaurant() { return liveMyRestaurant; }
+
+    private MutableLiveData<ArrayList<Restaurant>> liveRestaurant = new MutableLiveData<>();
+    private MutableLiveData<ArrayList<Workmate>> liveWorkmates = new MutableLiveData<>();
+    private MutableLiveData<ArrayList<Like>> liveLikes = new MutableLiveData<>();
+    private MutableLiveData<Location> liveLocation = new MutableLiveData<>();
+    private MutableLiveData<Restaurant> liveMyRestaurant = new MutableLiveData<>();
 
     public void getUsersCollection(UserRepository.WorkmatesListener listener) {
         mUserManager.getUsersCollection(listener);

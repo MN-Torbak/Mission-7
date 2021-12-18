@@ -66,14 +66,11 @@ public class WorkmateAdapter extends RecyclerView.Adapter<WorkmateAdapter.Workma
         } else {
             holder.mName.setText(holder.mName.getContext().getString(R.string.chosen, workmate.getName(), workmate.getRestaurant()));
         }
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (getReadableDate().equals(workmate.getRestaurant_date_choice()) && !workmate.getRestaurant().equals("aucun")) {
-                    Bundle b = new Bundle();
-                    b.putString("restaurant", workmate.getRestaurantID());
-                    Navigation.findNavController(view).navigate(R.id.action_navigation_workmates_to_restaurantDetailsFragment, b);
-                }
+        holder.itemView.setOnClickListener(view -> {
+            if (getReadableDate().equals(workmate.getRestaurant_date_choice()) && !workmate.getRestaurant().equals("aucun")) {
+                Bundle b = new Bundle();
+                b.putString("restaurant", workmate.getRestaurantID());
+                Navigation.findNavController(view).navigate(R.id.action_navigation_workmates_to_restaurantDetailsFragment, b);
             }
         });
     }
